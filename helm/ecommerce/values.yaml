@@ -25,7 +25,7 @@ services:
     hostname: api-gateway
     image:
       repository: sebas3004tian/api-gateway
-      tag: latest
+      tag: develop-2
     service:
       port: 8080
 
@@ -34,7 +34,7 @@ services:
     hostname: cloud-config
     image:
       repository: sebas3004tian/cloud-config
-      tag: latest
+      tag: develop-2
     service:
       port: 9296
 
@@ -43,7 +43,7 @@ services:
     hostname: favourite-service
     image:
       repository: sebas3004tian/favourite-service
-      tag: latest
+      tag: develop-2
     service:
       port: 8800
 
@@ -52,7 +52,7 @@ services:
     hostname: order-service
     image:
       repository: sebas3004tian/order-service
-      tag: latest
+      tag: develop-2
     service:
       port: 8300
 
@@ -61,7 +61,7 @@ services:
     hostname: payment-service
     image:
       repository: sebas3004tian/payment-service
-      tag: latest
+      tag: develop-2
     service:
       port: 8400
 
@@ -70,7 +70,7 @@ services:
     hostname: product-service
     image:
       repository: sebas3004tian/product-service
-      tag: latest
+      tag: develop-2
     service:
       port: 8500
 
@@ -79,7 +79,7 @@ services:
     hostname: proxy-client
     image:
       repository: sebas3004tian/proxy-client
-      tag: latest
+      tag: develop-2
     service:
       port: 8900
 
@@ -88,7 +88,7 @@ services:
     hostname: service-discovery
     image:
       repository: sebas3004tian/service-discovery
-      tag: latest
+      tag: develop-2
     service:
       port: 8761
 
@@ -97,7 +97,7 @@ services:
     hostname: shipping-service
     image:
       repository: sebas3004tian/shipping-service
-      tag: latest
+      tag: develop-2
     service:
       port: 8600
 
@@ -106,7 +106,7 @@ services:
     hostname: user-service
     image:
       repository: sebas3004tian/user-service
-      tag: latest
+      tag: develop-2
     service:
       port: 8700
 

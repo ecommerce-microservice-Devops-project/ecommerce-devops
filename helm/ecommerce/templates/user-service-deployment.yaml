@@ -16,9 +16,9 @@ spec:
     spec:
       containers:
         - name: user-service
-          image: {{ .Values.services.user-service.image.repository }}:{{ .Values.services.user-service.image.tag }}
+          image: {{ index .Values.services "user-service" "image" "repository" }}:{{ index .Values.services "user-service" "image" "tag" }}
           ports:
-            - containerPort: {{ .Values.services.user-service.service.port }}
+            - containerPort: {{ index .Values.services "user-service" "service" "port" }}
           env:
             - name: EUREKA_CLIENT_AVAILABILITYZONES_DEFAULT
               valueFrom:

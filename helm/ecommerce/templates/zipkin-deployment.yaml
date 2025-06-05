@@ -16,8 +16,8 @@ spec:
     spec:
       containers:
         - name: zipkin
-          image: {{ .Values.services.zipkin.image.repository }}:{{ .Values.services.zipkin.image.tag }}
+          image: {{ index .Values.services "zipkin" "image" "repository" }}:{{ index .Values.services "zipkin" "image" "tag" }}
           ports:
-            - containerPort: {{ .Values.services.zipkin.service.port }}
+            - containerPort: {{ index .Values.services "zipkin" "service" "port" }}
           resources: {}
       restartPolicy: Always

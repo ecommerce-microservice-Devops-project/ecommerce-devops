@@ -1,25 +1,28 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: shipping-service
+  name: proxy-client
   labels:
-    app: shipping-service
+    app: proxy-client
 spec:
   replicas: {{ .Values.defaults.replicas }}
   selector:
     matchLabels:
-      app: shipping-service
+      app: proxy-client
   template:
     metadata:
       labels:
-        app: shipping-service
+        app: proxy-client
+        network: microservices_network
     spec:
       containers:
-        - name: shipping-service
-          image: {{ .Values.services.shipping-service.image.repository }}:{{ .Values.services.shipping-service.image.tag }}
+        - name: proxy-client
+          image: {{ index .Values.services "proxy-client" "image" "repository" }}:{{ index .Values.services "proxy-client" "image" "tag" }}
           ports:
-            - containerPort: {{ .Values.services.shipping-service.service.port }}
+            - containerPort: {{ index .Values.services "proxy-client" "service" "port" }}
           env:
+            - name: EUREKA_INSTANCE_HOSTNAME
+              value: proxy-client
             - name: EUREKA_CLIENT_AVAILABILITYZONES_DEFAULT
               valueFrom:
                 configMapKeyRef:
@@ -55,8 +58,6 @@ spec:
                 configMapKeyRef:
                   name: {{ .Release.Name }}-common-env
                   key: SPRING_ZIPKIN_BASE-URL
-            - name: EUREKA_INSTANCE_HOSTNAME
-              value: shipping-service
             - name: EUREKA_INSTANCE_PREFER_IP_ADDRESS
               valueFrom:
                 configMapKeyRef:

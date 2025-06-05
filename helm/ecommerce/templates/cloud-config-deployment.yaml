@@ -16,9 +16,9 @@ spec:
     spec:
       containers:
         - name: cloud-config
-          image: {{ .Values.services.cloud-config.image.repository }}:{{ .Values.services.cloud-config.image.tag }}
+          image: {{ index .Values.services "cloud-config" "image" "repository" }}:{{ index .Values.services "cloud-config" "image" "tag" }}
           ports:
-            - containerPort: {{ .Values.services.cloud-config.service.port }}
+            - containerPort: {{ index .Values.services "cloud-config" "service" "port" }}
           env:
             {{- range $key, $value := .Values.commonEnv }}
             - name: {{ $key }}
@@ -26,5 +26,4 @@ spec:
             {{- end }}
             - name: EUREKA_INSTANCE_HOSTNAME
               value: cloud-config
-          resources: {}
       restartPolicy: Always

@@ -1,25 +1,27 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api-gateway
+  name: favourite-service
   labels:
-    app: api-gateway
+    app: favourite-service
 spec:
   replicas: {{ .Values.defaults.replicas }}
   selector:
     matchLabels:
-      app: api-gateway
+      app: favourite-service
   template:
     metadata:
       labels:
-        app: api-gateway
+        app: favourite-service
     spec:
       containers:
-        - name: api-gateway
-          image: {{ .Values.services.api-gateway.image.repository }}:{{ .Values.services.api-gateway.image.tag }}
+        - name: favourite-service
+          image: {{ index .Values.services "favourite-service" "image" "repository" }}:{{ index .Values.services "favourite-service" "image" "tag" }}
           ports:
-            - containerPort: {{ .Values.services.api-gateway.service.port }}
+            - containerPort: {{ index .Values.services "favourite-service" "service" "port" }}
           env:
+            - name: EUREKA_INSTANCE_HOSTNAME
+              value: favourite-service
             - name: EUREKA_CLIENT_AVAILABILITYZONES_DEFAULT
               valueFrom:
                 configMapKeyRef:
@@ -55,8 +57,6 @@ spec:
                 configMapKeyRef:
                   name: {{ .Release.Name }}-common-env
                   key: SPRING_ZIPKIN_BASE-URL
-            - name: EUREKA_INSTANCE_HOSTNAME
-              value: api-gateway
             - name: EUREKA_INSTANCE_PREFER_IP_ADDRESS
               valueFrom:
                 configMapKeyRef:
