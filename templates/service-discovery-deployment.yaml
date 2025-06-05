@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-discovery
+  labels:
+    app: service-discovery
+spec:
+  replicas: {{ .Values.serviceDiscovery.replicas }}
+  selector:
+    matchLabels:
+      app: service-discovery
+  template:
+    metadata:
+      labels:
+        app: service-discovery
+        network: microservices_network
+    spec:
+      containers:
+        - name: service-discovery
+          image: {{ .Values.serviceDiscovery.image.repository }}:{{ .Values.serviceDiscovery.image.tag }}
+          ports:
+            - containerPort: {{ .Values.serviceDiscovery.containerPort }}
+          env:
+            - name: SPRING_CONFIG_IMPORT
+              value: optional:configserver:http://cloud-config:{{ .Values.cloudConfig.service.port }}/
+            - name: SPRING_ZIPKIN_BASE-URL
+              value: http://zipkin:9411
+          resources: {{- toYaml .Values.serviceDiscovery.resources | nindent 12 }}
+      restartPolicy: Always

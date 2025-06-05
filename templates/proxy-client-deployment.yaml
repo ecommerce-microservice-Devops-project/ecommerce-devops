@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: proxy-client
+  labels:
+    app: proxy-client
+spec:
+  replicas: {{ .Values.proxyClient.replicas }}
+  selector:
+    matchLabels:
+      app: proxy-client
+  template:
+    metadata:
+      labels:
+        app: proxy-client
+        network: microservices_network
+    spec:
+      containers:
+        - name: proxy-client
+          image: {{ .Values.proxyClient.image }}
+          ports:
+            - containerPort: {{ .Values.proxyClient.containerPort }}
+          env:
+            - name: EUREKA_CLIENT_AVAILABILITYZONES_DEFAULT
+              value: myzone
+            - name: EUREKA_CLIENT_REGION
+              value: default
+            - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+              value: http://service-discovery:8761/eureka/
+            - name: EUREKA_CLIENT_SERVICEURL_MYZONE
+              value: http://service-discovery:8761/eureka
+            - name: SPRING_CONFIG_IMPORT
+              value: optional:configserver:http://cloud-config:9296/
+            - name: SPRING_PROFILES_ACTIVE
+              value: dev
+            - name: SPRING_ZIPKIN_BASE-URL
+              value: http://zipkin:9411
+            - name: EUREKA_INSTANCE_HOSTNAME
+              value: proxy-client
+            - name: EUREKA_INSTANCE_PREFER_IP_ADDRESS
+              value: "false"
+          resources: {{ toYaml .Values.proxyClient.resources | nindent 10 }}
+      restartPolicy: Always

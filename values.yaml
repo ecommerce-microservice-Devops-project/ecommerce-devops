@@ -1,0 +1,119 @@
+global:
+  namespace: ecommerce-dev
+
+defaults:
+  replicas: 1
+  image:
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 80
+
+commonEnv:
+  EUREKA_CLIENT_AVAILABILITYZONES_DEFAULT: myzone
+  EUREKA_CLIENT_REGION: default
+  EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-discovery:8761/eureka/
+  EUREKA_CLIENT_SERVICEURL_MYZONE: http://service-discovery:8761/eureka
+  SPRING_CONFIG_IMPORT: optional:configserver:http://cloud-config:9296/
+  SPRING_PROFILES_ACTIVE: dev
+  SPRING_ZIPKIN_BASE-URL: http://zipkin:9411
+  EUREKA_INSTANCE_PREFER_IP_ADDRESS: "false"
+
+services:
+  api-gateway:
+    enabled: true
+    hostname: api-gateway
+    image:
+      repository: sebas3004tian/api-gateway
+      tag: latest
+    service:
+      port: 8080
+
+  cloud-config:
+    enabled: true
+    hostname: cloud-config
+    image:
+      repository: sebas3004tian/cloud-config
+      tag: latest
+    service:
+      port: 9296
+
+  favourite-service:
+    enabled: true
+    hostname: favourite-service
+    image:
+      repository: sebas3004tian/favourite-service
+      tag: latest
+    service:
+      port: 8800
+
+  order-service:
+    enabled: true
+    hostname: order-service
+    image:
+      repository: sebas3004tian/order-service
+      tag: latest
+    service:
+      port: 8300
+
+  payment-service:
+    enabled: true
+    hostname: payment-service
+    image:
+      repository: sebas3004tian/payment-service
+      tag: latest
+    service:
+      port: 8400
+
+  product-service:
+    enabled: true
+    hostname: product-service
+    image:
+      repository: sebas3004tian/product-service
+      tag: latest
+    service:
+      port: 8500
+
+  proxy-client:
+    enabled: true
+    hostname: proxy-client
+    image:
+      repository: sebas3004tian/proxy-client
+      tag: latest
+    service:
+      port: 8900
+
+  service-discovery:
+    enabled: true
+    hostname: service-discovery
+    image:
+      repository: sebas3004tian/service-discovery
+      tag: latest
+    service:
+      port: 8761
+
+  shipping-service:
+    enabled: true
+    hostname: shipping-service
+    image:
+      repository: sebas3004tian/shipping-service
+      tag: latest
+    service:
+      port: 8600
+
+  user-service:
+    enabled: true
+    hostname: user-service
+    image:
+      repository: sebas3004tian/user-service
+      tag: latest
+    service:
+      port: 8700
+
+  zipkin:
+    enabled: true
+    image:
+      repository: openzipkin/zipkin
+      tag: latest
+    service:
+      port: 9411

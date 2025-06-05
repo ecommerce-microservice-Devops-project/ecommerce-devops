@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-service
+  labels:
+    app: order-service
+spec:
+  replicas: {{ .Values.defaults.replicas }}
+  selector:
+    matchLabels:
+      app: order-service
+  template:
+    metadata:
+      labels:
+        app: order-service
+    spec:
+      containers:
+        - name: order-service
+          image: {{ .Values.services.order-service.image.repository }}:{{ .Values.services.order-service.image.tag }}
+          ports:
+            - containerPort: {{ .Values.services.order-service.service.port }}
+          env:
+            - name: EUREKA_CLIENT_AVAILABILITYZONES_DEFAULT
+              value: "{{ .Values.commonEnv.EUREKA_CLIENT_AVAILABILITYZONES_DEFAULT }}"
+            - name: EUREKA_CLIENT_REGION
+              value: "{{ .Values.commonEnv.EUREKA_CLIENT_REGION }}"
+            - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+              value: "http://service-discovery:8761/eureka/"
+            - name: EUREKA_CLIENT_SERVICEURL_MYZONE
+              value: "http://service-discovery:8761/eureka"
+            - name: SPRING_CONFIG_IMPORT
+              value: "optional:configserver:http://cloud-config:9296/"
+            - name: SPRING_PROFILES_ACTIVE
+              value: "{{ .Values.commonEnv.SPRING_PROFILES_ACTIVE }}"
+            - name: SPRING_ZIPKIN_BASE-URL
+              value: "{{ .Values.commonEnv.SPRING_ZIPKIN_BASE-URL }}"
+            - name: EUREKA_INSTANCE_HOSTNAME
+              value: "order-service"
+            - name: EUREKA_INSTANCE_PREFER_IP_ADDRESS
+              value: "{{ .Values.commonEnv.EUREKA_INSTANCE_PREFER_IP_ADDRESS }}"
+      restartPolicy: Always
