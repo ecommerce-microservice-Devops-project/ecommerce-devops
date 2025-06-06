@@ -1,0 +1,117 @@
+# user-service
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: only-proxy-to-user-service
+  namespace: ecommerce-dev
+spec:
+  podSelector:
+    matchLabels:
+      app: user-service
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: proxy-client
+
+---
+
+# product-service
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: only-proxy-to-product-service
+  namespace: ecommerce-dev
+spec:
+  podSelector:
+    matchLabels:
+      app: product-service
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: proxy-client
+
+---
+
+# order-service
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: only-proxy-to-order-service
+  namespace: ecommerce-dev
+spec:
+  podSelector:
+    matchLabels:
+      app: order-service
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: proxy-client
+
+---
+
+# payment-service
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: only-proxy-to-payment-service
+  namespace: ecommerce-dev
+spec:
+  podSelector:
+    matchLabels:
+      app: payment-service
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: proxy-client
+
+---
+
+# favourite-service
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: only-proxy-to-favourite-service
+  namespace: ecommerce-dev
+spec:
+  podSelector:
+    matchLabels:
+      app: favourite-service
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: proxy-client
+
+---
+
+# shipping-service
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: only-proxy-to-shipping-service
+  namespace: ecommerce-dev
+spec:
+  podSelector:
+    matchLabels:
+      app: shipping-service
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: proxy-client
