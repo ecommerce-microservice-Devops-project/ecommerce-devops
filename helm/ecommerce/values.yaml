@@ -106,7 +106,7 @@ services:
     hostname: user-service
     image:
       repository: sebas3004tian/user-service
-      tag: develop-2
+      tag: v1.3
     service:
       port: 8700
 
