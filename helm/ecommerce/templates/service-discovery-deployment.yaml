@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-discovery
+  labels:
+    app: service-discovery
+spec:
+  replicas: {{ .Values.defaults.replicas }}
+  selector:
+    matchLabels:
+      app: service-discovery
+  template:
+    metadata:
+      labels:
+        app: service-discovery
+    spec:
+      containers:
+        - name: service-discovery
+          image: {{ index .Values.services "service-discovery" "image" "repository" }}:{{ index .Values.services "service-discovery" "image" "tag" }}
+          ports:
+            - containerPort: {{ index .Values.services "service-discovery" "service" "port" }}
+          env:
+            - name: SPRING_CONFIG_IMPORT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-common-env
+                  key: SPRING_CONFIG_IMPORT
+            - name: SPRING_ZIPKIN_BASE-URL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-common-env
+                  key: SPRING_ZIPKIN_BASE-URL
+      restartPolicy: Always

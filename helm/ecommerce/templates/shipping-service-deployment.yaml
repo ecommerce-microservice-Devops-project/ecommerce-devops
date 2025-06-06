@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shipping-service
+  labels:
+    app: shipping-service
+spec:
+  replicas: {{ .Values.defaults.replicas }}
+  selector:
+    matchLabels:
+      app: shipping-service
+  template:
+    metadata:
+      labels:
+        app: shipping-service
+    spec:
+      containers:
+        - name: shipping-service
+          image: {{ index .Values.services "shipping-service" "image" "repository" }}:{{ index .Values.services "shipping-service" "image" "tag" }}
+          ports:
+            - containerPort: {{ index .Values.services "shipping-service" "service" "port" }}
+          env:
+            - name: EUREKA_INSTANCE_HOSTNAME
+              value: shipping-service
+            - name: EUREKA_CLIENT_AVAILABILITYZONES_DEFAULT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-common-env
+                  key: EUREKA_CLIENT_AVAILABILITYZONES_DEFAULT
+            - name: EUREKA_CLIENT_REGION
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-common-env
+                  key: EUREKA_CLIENT_REGION
+            - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-common-env
+                  key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+            - name: EUREKA_CLIENT_SERVICEURL_MYZONE
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-common-env
+                  key: EUREKA_CLIENT_SERVICEURL_MYZONE
+            - name: SPRING_CONFIG_IMPORT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-common-env
+                  key: SPRING_CONFIG_IMPORT
+            - name: SPRING_PROFILES_ACTIVE
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-common-env
+                  key: SPRING_PROFILES_ACTIVE
+            - name: SPRING_ZIPKIN_BASE-URL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-common-env
+                  key: SPRING_ZIPKIN_BASE-URL
+            - name: EUREKA_INSTANCE_PREFER_IP_ADDRESS
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-common-env
+                  key: EUREKA_INSTANCE_PREFER_IP_ADDRESS
+      restartPolicy: Always
