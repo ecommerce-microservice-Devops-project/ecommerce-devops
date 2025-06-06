@@ -24,7 +24,7 @@ services:
     enabled: true
     hostname: api-gateway
     image:
-      repository: sebas3004tian/api-gateway
+      repository: sebas3004tian/api-gateway-ecommerce-boot
       tag: develop-2
     service:
       port: 8080
@@ -33,7 +33,7 @@ services:
     enabled: true
     hostname: cloud-config
     image:
-      repository: sebas3004tian/cloud-config
+      repository: sebas3004tian/cloud-config-ecommerce-boot
       tag: develop-2
     service:
       port: 9296
@@ -42,7 +42,7 @@ services:
     enabled: true
     hostname: favourite-service
     image:
-      repository: sebas3004tian/favourite-service
+      repository: sebas3004tian/favourite-service-ecommerce-boot
       tag: develop-2
     service:
       port: 8800
@@ -51,7 +51,7 @@ services:
     enabled: true
     hostname: order-service
     image:
-      repository: sebas3004tian/order-service
+      repository: sebas3004tian/order-service-ecommerce-boot
       tag: develop-2
     service:
       port: 8300
@@ -60,7 +60,7 @@ services:
     enabled: true
     hostname: payment-service
     image:
-      repository: sebas3004tian/payment-service
+      repository: sebas3004tian/payment-service-ecommerce-boot
       tag: develop-2
     service:
       port: 8400
@@ -69,7 +69,7 @@ services:
     enabled: true
     hostname: product-service
     image:
-      repository: sebas3004tian/product-service
+      repository: sebas3004tian/product-service-ecommerce-boot
       tag: develop-2
     service:
       port: 8500
@@ -78,7 +78,7 @@ services:
     enabled: true
     hostname: proxy-client
     image:
-      repository: sebas3004tian/proxy-client
+      repository: sebas3004tian/proxy-client-ecommerce-boot
       tag: develop-2
     service:
       port: 8900
@@ -87,7 +87,7 @@ services:
     enabled: true
     hostname: service-discovery
     image:
-      repository: sebas3004tian/service-discovery
+      repository: sebas3004tian/service-discovery-ecommerce-boot
       tag: develop-2
     service:
       port: 8761
@@ -96,7 +96,7 @@ services:
     enabled: true
     hostname: shipping-service
     image:
-      repository: sebas3004tian/shipping-service
+      repository: sebas3004tian/shipping-service-ecommerce-boot
       tag: develop-2
     service:
       port: 8600
@@ -105,8 +105,8 @@ services:
     enabled: true
     hostname: user-service
     image:
-      repository: sebas3004tian/user-service
-      tag: v1.3
+      repository: sebas3004tian/user-service-ecommerce-boot
+      tag: develop-2
     service:
       port: 8700
 
