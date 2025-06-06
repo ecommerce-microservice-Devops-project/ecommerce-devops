@@ -62,4 +62,11 @@ spec:
                 configMapKeyRef:
                   name: {{ .Release.Name }}-common-env
                   key: EUREKA_INSTANCE_PREFER_IP_ADDRESS
+          volumeMounts:
+            - name: h2-volume
+              mountPath: /data/h2
+      volumes:
+        - name: h2-volume
+          persistentVolumeClaim:
+            claimName: user-service-h2-pvc
       restartPolicy: Always
