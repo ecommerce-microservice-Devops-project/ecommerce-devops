@@ -23,18 +23,6 @@ pipeline {
             }
         }
 
-        stage('Debug Paths') {
-            steps {
-                sh '''
-                    echo "Ruta actual:"
-                    pwd
-                    echo "Contenido del workspace:"
-                    ls -R
-                '''
-            }
-        }
-
-
         stage('Deploy Services') {
             steps {
                 dir('helm') {
@@ -42,6 +30,23 @@ pipeline {
                 }
             }
         }
+
+        stage('Deploy Ingress') {
+            steps {
+                script {
+                    echo "Desplegando Ingress para rama: ${BRANCH_NAME}"
+                }
+                // Instala el Ingress Controller
+                sh """
+                    kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.10.0/deploy/static/provider/cloud/deploy.yaml
+                """
+                // Aplica el recurso ingress correspondiente a la rama
+                dir('helm/ecommerce/ingress') {
+                    sh "kubectl apply -f api-gateway-ingress-${BRANCH_NAME}.yaml"
+                }
+            }
+        }
+
 
 
     }
