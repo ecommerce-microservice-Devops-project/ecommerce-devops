@@ -27,5 +27,5 @@ RUN docker --version && \
     python3 --version && \
     kubectl version --client && \
     helm version
-
+    
 USER jenkins
