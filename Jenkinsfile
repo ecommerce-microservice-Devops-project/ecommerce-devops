@@ -26,7 +26,7 @@ pipeline {
         stage('Deploy Services') {
             steps {
                 dir('helm') {
-                    sh "helm upgrade --install ecommerce ecommerce -n ${K8S_NAMESPACE} -f ecommerce/values.yaml"
+                    sh 'helm upgrade --install ecommerce ./ecommerce -n ecommerce-develop -f ./ecommerce/values.yaml'
                 }
             }
         }
