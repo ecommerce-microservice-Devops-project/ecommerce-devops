@@ -23,18 +23,6 @@ pipeline {
             }
         }
 
-        stage('Debug Paths') {
-            steps {
-                sh '''
-                    echo "Ruta actual:"
-                    pwd
-                    echo "Contenido del workspace:"
-                    ls -R
-                '''
-            }
-        }
-
-
         stage('Deploy Services') {
             steps {
                 dir('helm') {
