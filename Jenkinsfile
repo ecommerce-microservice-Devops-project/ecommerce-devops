@@ -38,6 +38,8 @@ pipeline {
                 }
                 // Instala el Ingress Controller
                 sh """
+                    kubectl delete job ingress-nginx-admission-create -n ingress-nginx --ignore-not-found
+                    kubectl delete job ingress-nginx-admission-patch -n ingress-nginx --ignore-not-found
                     kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.10.0/deploy/static/provider/cloud/deploy.yaml
                 """
                 // Aplica el recurso ingress correspondiente a la rama
