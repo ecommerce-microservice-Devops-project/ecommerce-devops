@@ -10,7 +10,7 @@ resource "kubernetes_namespace" "jenkins" {
 
 resource "kubernetes_namespace" "dev" {
   metadata {
-    name = "ecommerce-dev"
+    name = "ecommerce-develop"
   }
 }
 
