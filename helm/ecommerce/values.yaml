@@ -1,5 +1,5 @@
 global:
-  namespace: ecommerce-dev
+  namespace: ecommerce-develop
 
 defaults:
   replicas: 1
