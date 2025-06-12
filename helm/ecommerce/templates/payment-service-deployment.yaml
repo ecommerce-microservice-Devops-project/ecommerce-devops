@@ -14,6 +14,10 @@ spec:
       labels:
         app: payment-service
     spec:
+      initContainers:
+      - name: wait-for-cloud-config
+        image: curlimages/curl:8.8.0
+        command: ['sh', '-c', 'until curl -s http://cloud-config:9296/actuator/health | grep UP; do echo waiting for cloud-config; sleep 3; done']    
       containers:
         - name: payment-service
           image: {{ index .Values.services "payment-service" "image" "repository" }}:{{ index .Values.services "payment-service" "image" "tag" }}

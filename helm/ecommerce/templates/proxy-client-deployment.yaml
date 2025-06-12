@@ -15,6 +15,10 @@ spec:
         app: proxy-client
         network: microservices_network
     spec:
+      initContainers:
+      - name: wait-for-cloud-config
+        image: curlimages/curl:8.8.0
+        command: ['sh', '-c', 'until curl -s http://cloud-config:9296/actuator/health | grep UP; do echo waiting for cloud-config; sleep 3; done']
       containers:
         - name: proxy-client
           image: {{ index .Values.services "proxy-client" "image" "repository" }}:{{ index .Values.services "proxy-client" "image" "tag" }}
