@@ -1,0 +1,143 @@
+global:
+  namespace: ecommerce-develop
+
+defaults:
+  replicas: 1
+  image:
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 80
+  hpa:
+    enabled: false
+
+commonEnv:
+  EUREKA_CLIENT_AVAILABILITYZONES_DEFAULT: myzone
+  EUREKA_CLIENT_REGION: default
+  EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-discovery:8761/eureka/
+  EUREKA_CLIENT_SERVICEURL_MYZONE: http://service-discovery:8761/eureka
+  SPRING_CONFIG_IMPORT: optional:configserver:http://cloud-config:9296/
+  SPRING_PROFILES_ACTIVE: dev
+  SPRING_ZIPKIN_BASE-URL: http://zipkin:9411
+  EUREKA_INSTANCE_PREFER_IP_ADDRESS: "false"
+
+services:
+  api-gateway:
+    enabled: true
+    hostname: api-gateway
+    image:
+      repository: sebas3004tian/api-gateway-ecommerce-boot
+      tag: develop-2
+    service:
+      port: 8080
+    hpa:
+      enabled: false
+
+  cloud-config:
+    enabled: true
+    hostname: cloud-config
+    image:
+      repository: sebas3004tian/cloud-config-ecommerce-boot
+      tag: develop-2
+    service:
+      port: 9296
+    hpa:
+      enabled: false
+
+  favourite-service:
+    enabled: true
+    hostname: favourite-service
+    image:
+      repository: sebas3004tian/favourite-service-ecommerce-boot
+      tag: develop-2
+    service:
+      port: 8800
+    hpa:
+      enabled: false
+
+  order-service:
+    enabled: true
+    hostname: order-service
+    image:
+      repository: sebas3004tian/order-service-ecommerce-boot
+      tag: develop-2
+    service:
+      port: 8300
+    hpa:
+      enabled: false
+
+  payment-service:
+    enabled: true
+    hostname: payment-service
+    image:
+      repository: sebas3004tian/payment-service-ecommerce-boot
+      tag: develop-2
+    service:
+      port: 8400
+    hpa:
+      enabled: false
+
+  product-service:
+    enabled: true
+    hostname: product-service
+    image:
+      repository: sebas3004tian/product-service-ecommerce-boot
+      tag: develop-2
+    service:
+      port: 8500
+    hpa:
+      enabled: false
+
+  proxy-client:
+    enabled: true
+    hostname: proxy-client
+    image:
+      repository: sebas3004tian/proxy-client-ecommerce-boot
+      tag: develop-2
+    service:
+      port: 8900
+    hpa:
+      enabled: false
+
+  service-discovery:
+    enabled: true
+    hostname: service-discovery
+    image:
+      repository: sebas3004tian/service-discovery-ecommerce-boot
+      tag: develop-2
+    service:
+      port: 8761
+    hpa:
+      enabled: false
+
+  shipping-service:
+    enabled: true
+    hostname: shipping-service
+    image:
+      repository: sebas3004tian/shipping-service-ecommerce-boot
+      tag: develop-2
+    service:
+      port: 8600
+    hpa:
+      enabled: false
+
+  user-service:
+    enabled: true
+    hostname: user-service
+    image:
+      repository: sebas3004tian/user-service-ecommerce-boot
+      tag: develop-2
+    service:
+      port: 8700
+    hpa:
+      enabled: false
+
+  zipkin:
+    enabled: true
+    image:
+      repository: openzipkin/zipkin
+      tag: latest
+    service:
+      port: 9411
+    hpa:
+      enabled: false
