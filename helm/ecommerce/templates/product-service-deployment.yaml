@@ -15,6 +15,10 @@ spec:
         app: product-service
         io.kompose.network/microservices_network: "true"
     spec:
+      initContainers:
+      - name: wait-for-cloud-config
+        image: curlimages/curl:8.8.0
+        command: ['sh', '-c', 'until curl -s http://cloud-config:9296/actuator/health | grep UP; do echo waiting for cloud-config; sleep 3; done']
       containers:
         - name: product-service
           image: {{ index .Values.services "product-service" "image" "repository" }}:{{ index .Values.services "product-service" "image" "tag" }}

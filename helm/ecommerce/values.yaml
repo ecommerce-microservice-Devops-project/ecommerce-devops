@@ -14,7 +14,7 @@ commonEnv:
   EUREKA_CLIENT_REGION: default
   EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-discovery:8761/eureka/
   EUREKA_CLIENT_SERVICEURL_MYZONE: http://service-discovery:8761/eureka
-  SPRING_CONFIG_IMPORT: optional:configserver:http://cloud-config:9296/
+  SPRING_CONFIG_IMPORT: optional:configserver:http://cloud-config:9296
   SPRING_PROFILES_ACTIVE: dev
   SPRING_ZIPKIN_BASE-URL: http://zipkin:9411
   EUREKA_INSTANCE_PREFER_IP_ADDRESS: "false"
@@ -24,8 +24,8 @@ services:
     enabled: true
     hostname: api-gateway
     image:
-      repository: sebas3004tian/api-gateway
-      tag: develop-2
+      repository: sebas3004tian/api-gateway-ecommerce-boot
+      tag: develop-6
     service:
       port: 8080
 
@@ -33,8 +33,8 @@ services:
     enabled: true
     hostname: cloud-config
     image:
-      repository: sebas3004tian/cloud-config
-      tag: develop-2
+      repository: sebas3004tian/cloud-config-ecommerce-boot
+      tag: develop-6
     service:
       port: 9296
 
@@ -42,8 +42,8 @@ services:
     enabled: true
     hostname: favourite-service
     image:
-      repository: sebas3004tian/favourite-service
-      tag: develop-2
+      repository: sebas3004tian/favourite-service-ecommerce-boot
+      tag: develop-6
     service:
       port: 8800
 
@@ -51,8 +51,8 @@ services:
     enabled: true
     hostname: order-service
     image:
-      repository: sebas3004tian/order-service
-      tag: develop-2
+      repository: sebas3004tian/order-service-ecommerce-boot
+      tag: develop-6
     service:
       port: 8300
 
@@ -60,26 +60,26 @@ services:
     enabled: true
     hostname: payment-service
     image:
-      repository: sebas3004tian/payment-service
-      tag: develop-2
+      repository: sebas3004tian/payment-service-ecommerce-boot
+      tag: develop-6
     service:
       port: 8400
 
   product-service:
     enabled: true
-    hostname: product-service
     image:
-      repository: sebas3004tian/product-service
-      tag: develop-2
+      repository: sebas3004tian/product-service-ecommerce-boot
+      tag: develop-6
     service:
       port: 8500
+
 
   proxy-client:
     enabled: true
     hostname: proxy-client
     image:
-      repository: sebas3004tian/proxy-client
-      tag: develop-2
+      repository: sebas3004tian/proxy-client-ecommerce-boot
+      tag: develop-5
     service:
       port: 8900
 
@@ -87,8 +87,8 @@ services:
     enabled: true
     hostname: service-discovery
     image:
-      repository: sebas3004tian/service-discovery
-      tag: develop-2
+      repository: sebas3004tian/service-discovery-ecommerce-boot
+      tag: develop-7
     service:
       port: 8761
 
@@ -96,8 +96,8 @@ services:
     enabled: true
     hostname: shipping-service
     image:
-      repository: sebas3004tian/shipping-service
-      tag: develop-2
+      repository: sebas3004tian/shipping-service-ecommerce-boot
+      tag: develop-8
     service:
       port: 8600
 
@@ -105,8 +105,8 @@ services:
     enabled: true
     hostname: user-service
     image:
-      repository: sebas3004tian/user-service
-      tag: develop-2
+      repository: sebas3004tian/user-service-ecommerce-boot
+      tag: develop-6
     service:
       port: 8700
 
