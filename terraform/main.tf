@@ -13,6 +13,17 @@ resource "kubernetes_namespace" "dev" {
     name = "ecommerce-develop"
   }
 }
+resource "kubernetes_namespace" "qa" {
+  metadata {
+    name = "ecommerce-stage"
+  }
+}
+resource "kubernetes_namespace" "prod" {
+  metadata {
+    name = "ecommerce-master"
+  }
+}
+
 
 # Aplicar los archivos YAML de Jenkins usando kubectl
 resource "null_resource" "jenkins_deployment" {
