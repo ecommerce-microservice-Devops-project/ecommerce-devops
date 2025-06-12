@@ -22,11 +22,12 @@ pipeline {
                 git branch: "${BRANCH_NAME}", url: "${REPO_URL}"
             }
         }
-
         stage('Deploy Services') {
             steps {
                 dir('helm') {
-                    sh "helm upgrade --install ecommerce ./ecommerce -n ecommerce-develop -f ./ecommerce/values-${BRANCH_NAME}.yaml"
+                    sh "helm lint ./ecommerce"
+
+                    sh "helm upgrade --install ecommerce ./ecommerce -n ${K8S_NAMESPACE} -f ./ecommerce/values-${BRANCH_NAME}.yaml"
                 }
             }
         }
@@ -40,7 +41,7 @@ pipeline {
                 sh """
                     kubectl delete job ingress-nginx-admission-create -n ingress-nginx --ignore-not-found
                     kubectl delete job ingress-nginx-admission-patch -n ingress-nginx --ignore-not-found
-                    kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.10.0/deploy/static/provider/cloud/deploy.yaml
+                    kubectl get pods -n ingress-nginx || kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.10.0/deploy/static/provider/cloud/deploy.yaml
                 """
                 // Aplica el recurso ingress correspondiente a la rama
                 dir('helm/ecommerce/ingress') {
@@ -58,72 +59,6 @@ pipeline {
                 """
             }
         }
-
-        stage('Create ArgoCD Applications') {
-            steps {
-                script {
-                    def services = [
-                        "api-gateway",
-                        "cloud-config",
-                        "favourite-service",
-                        "order-service",
-                        "payment-service",
-                        "product-service",
-                        "proxy-client",
-                        "service-discovery",
-                        "shipping-service",
-                        "user-service"
-                    ]
-
-                    services.each { service ->
-                        def appFile = "${service}-app.yaml"
-                        def image = "${DOCKERHUB_USER}/${service}"
-                        def appYaml = """
-                        apiVersion: argoproj.io/v1alpha1
-                        kind: Application
-                        metadata:
-                        name: ${service}-app
-                        namespace: argocd
-                        annotations:
-                            argocd-image-updater.argoproj.io/image-list: ${image}
-                            argocd-image-updater.argoproj.io/${DOCKERHUB_USER}_${service}.update-strategy: latest
-                            argocd-image-updater.argoproj.io/${DOCKERHUB_USER}_${service}.allow-tags: ^${BRANCH_NAME}-[0-9]+$
-                        spec:
-                        project: default
-                        source:
-                            repoURL: ${REPO_URL}
-                            targetRevision: ${BRANCH_NAME}
-                            path: helm/ecommerce
-                            helm:
-                            valueFiles:
-                                - values.yaml
-                        destination:
-                            server: https://kubernetes.default.svc
-                            namespace: ${K8S_NAMESPACE}
-                        syncPolicy:
-                            automated:
-                            prune: true
-                            selfHeal: true
-                        """
-
-                        writeFile file: appFile, text: appYaml
-                        sh "kubectl apply -f ${appFile}"
-                    }
-                }
-            }
-        }
-
-        stage('Update Image Tag in Helm values.yaml') {
-            steps {
-                sh """
-                    sed -i 's/tag: .*/tag: ${IMAGE_TAG}/' helm/ecommerce/values.yaml
-                    git config user.name "jenkins"
-                    git config user.email "jenkins@ci.local"
-                    git commit -am "Update image tag to ${IMAGE_TAG}"
-                    git push origin ${BRANCH_NAME}
-                """
-            }
-        }
         stage('Trigger ArgoCD Sync') {
             steps {
                 script {
@@ -136,7 +71,10 @@ pipeline {
             steps {
                 script {
                     echo "Esperando a que el despliegue se complete para la rama: ${BRANCH_NAME}"
-                    sh "kubectl rollout status deployment/user-service -n ${K8S_NAMESPACE} --timeout=600s"
+                    def deployments = sh(script: "kubectl get deploy -n ${K8S_NAMESPACE} -o jsonpath='{.items[*].metadata.name}'", returnStdout: true).trim().split(" ")
+                    for (d in deployments) {
+                        sh "kubectl rollout status deployment/${d} -n ${K8S_NAMESPACE} --timeout=300s"
+                    }
                 }
             }
         }
