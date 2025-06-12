@@ -59,6 +59,35 @@ pipeline {
                 """
             }
         }
+       stage('Setup ELK Stack') {
+            steps {
+                dir('ELK') {
+                    script {
+                        sh 'kubectl get namespace logging-stack || kubectl create namespace logging-stack'
+
+                        echo 'Aplicando Elasticsearch...'
+                        sh '''
+                            kubectl apply -f elasticsearch/elasticsearch-statefulset.yaml -n logging-stack
+                            kubectl apply -f elasticsearch/elasticsearch-service.yaml -n logging-stack
+                        '''
+
+                        echo 'Aplicando Kibana...'
+                        sh '''
+                            kubectl apply -f kibana/kibana-deployment.yaml -n logging-stack
+                            kubectl apply -f kibana/kibana-service.yaml -n logging-stack
+                        '''
+
+                        echo 'Aplicando Filebeat...'
+                        sh '''
+                            kubectl apply -f filebeat/filebeat-configmap.yaml -n logging-stack
+                            kubectl apply -f filebeat/filebeat-rbac.yaml -n logging-stack
+                            kubectl apply -f filebeat/filebeat-daemonset.yaml -n logging-stack
+                        '''
+                    }
+                }
+            }
+        }
+
         stage('Wait for Deployment') {
             steps {
                 script {
