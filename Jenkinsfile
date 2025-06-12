@@ -64,7 +64,11 @@ pipeline {
                 script {
                     echo "Sincronizando ArgoCD para rama: ${BRANCH_NAME}"
                 }
-                sh "argocd app sync ecommerce-app --auth-token $(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 --decode)"
+                script {
+                    def token = sh(script: 'kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 --decode', returnStdout: true).trim()
+                    sh "argocd app sync ecommerce-app --auth-token ${token}"
+                }
+
             }
         }
         stage('Wait for Deployment') {
