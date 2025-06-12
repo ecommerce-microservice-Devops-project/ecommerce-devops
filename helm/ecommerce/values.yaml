@@ -16,7 +16,7 @@ commonEnv:
   EUREKA_CLIENT_REGION: default
   EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-discovery:8761/eureka/
   EUREKA_CLIENT_SERVICEURL_MYZONE: http://service-discovery:8761/eureka
-  SPRING_CONFIG_IMPORT: optional:configserver:http://cloud-config:9296
+  SPRING_CONFIG_IMPORT: optional:configserver:http://cloud-config:9296/
   SPRING_PROFILES_ACTIVE: dev
   SPRING_ZIPKIN_BASE-URL: http://zipkin:9411
   EUREKA_INSTANCE_PREFER_IP_ADDRESS: "false"
