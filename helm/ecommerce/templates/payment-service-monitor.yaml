@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: payment-service-monitor
+  labels:
+    release: monitoring-stack
+spec:
+  selector:
+    matchLabels:
+      app: payment-service
+  namespaceSelector:
+    matchNames:
+    - ecommerce-develop
+    - ecommerce-stage
+    - ecommerce-master
+  endpoints:
+  - port: http
+    path: payment-service/actuator/prometheus
+    interval: 15s
