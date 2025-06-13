@@ -15,9 +15,10 @@ spec:
         app: payment-service
     spec:
       securityContext:
-        runAsNonRoot: true
-        runAsUser: 1000
-        fsGroup: 2000
+        runAsNonRoot: {{ .Values.securityContext.runAsNonRoot | default true }}
+        runAsUser: {{ .Values.securityContext.runAsUser | default 1000 }}
+        runAsGroup: {{ .Values.securityContext.runAsGroup | default 1000 }}
+        fsGroup: {{ .Values.securityContext.fsGroup | default 1000 }}
       containers:
         - name: payment-service
           image: {{ index .Values.services "payment-service" "image" "repository" }}:{{ index .Values.services "payment-service" "image" "tag" }}
@@ -25,9 +26,15 @@ spec:
             - containerPort: {{ index .Values.services "payment-service" "service" "port" }}
           securityContext:
             allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: {{ .Values.securityContext.runAsUser | default 1000 }}
+            runAsGroup: {{ .Values.securityContext.runAsGroup | default 1000 }}
             capabilities:
               drop:
-                - ALL
+              - ALL
+            readOnlyRootFilesystem: false
+            seccompProfile:
+              type: RuntimeDefault
           env:
             - name: EUREKA_INSTANCE_HOSTNAME
               value: payment-service

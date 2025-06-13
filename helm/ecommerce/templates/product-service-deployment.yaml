@@ -16,9 +16,10 @@ spec:
         io.kompose.network/microservices_network: "true"
     spec:
       securityContext:
-        runAsNonRoot: true
-        runAsUser: 1000
-        fsGroup: 2000
+        runAsNonRoot: {{ .Values.securityContext.runAsNonRoot | default true }}
+        runAsUser: {{ .Values.securityContext.runAsUser | default 1000 }}
+        runAsGroup: {{ .Values.securityContext.runAsGroup | default 1000 }}
+        fsGroup: {{ .Values.securityContext.fsGroup | default 1000 }}
       containers:
         - name: product-service
           image: {{ index .Values.services "product-service" "image" "repository" }}:{{ index .Values.services "product-service" "image" "tag" }}
@@ -26,9 +27,15 @@ spec:
             - containerPort: {{ index .Values.services "product-service" "service" "port" }}
           securityContext:
             allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: {{ .Values.securityContext.runAsUser | default 1000 }}
+            runAsGroup: {{ .Values.securityContext.runAsGroup | default 1000 }}
             capabilities:
               drop:
-                - ALL
+              - ALL
+            readOnlyRootFilesystem: false
+            seccompProfile:
+              type: RuntimeDefault
           env:
             - name: EUREKA_INSTANCE_HOSTNAME
               value: product-service
