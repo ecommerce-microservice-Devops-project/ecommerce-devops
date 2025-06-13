@@ -1,0 +1,400 @@
+{
+	"info": {
+		"_postman_id": "74763462-8124-4486-8ebd-e96c21c0d8b5",
+		"name": "Proyecto PLAT",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39654236"
+	},
+	"item": [
+		{
+			"name": "Ver categorias",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{host}}/app/api/categories",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"app",
+						"api",
+						"categories"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET PRODUCTS",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{host}}/app/api/products",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"app",
+						"api",
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "LOGIN",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse the response JSON\r",
+							"let jsonData = pm.response.json();\r",
+							"\r",
+							"// Guarda el token como variable de colección\r",
+							"pm.collectionVariables.set(\"jwtToken\", jsonData.jwtToken);\r",
+							"\r",
+							"// También puedes mostrar un log opcional en la consola\r",
+							"console.log(\"Token guardado en variable de colección: \" + jsonData.jwtToken);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"admin\",\r\n   \"password\": \"password\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{host}}/app/api/authenticate",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"app",
+						"api",
+						"authenticate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET PAYMENTS",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwtToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{host}}/app/api/payments",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"app",
+						"api",
+						"payments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET ADDRESS",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwtToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{host}}/app/api/address",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"app",
+						"api",
+						"address"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET ORDERS",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwtToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{host}}/app/api/orders",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"app",
+						"api",
+						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET SHIPPING",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwtToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"userId\": \"{{$randomInt}}\",\r\n\"firstName\": \"Alejandro\",\r\n\"lastName\": \"Cordoba\",\r\n\"imageUrl\": \"{{$randomUrl}}\",\r\n\"email\": \"{{$randomEmail}}\",\r\n\"addressDtos\": [{\r\n\"fullAddress\": \"123 Main St\",\r\n\"postalCode\": \"12345\",\r\n\"city\": \"New York\"\r\n}\r\n],\r\n\"credential\": {\r\n\"username\": \"johndoe\",\r\n\"password\": \"securePassword123\",\r\n\"roleBasedAuthority\": \"ROLE_USER\",\r\n\"isEnabled\": true,\r\n\"isAccountNonExpired\": true,\r\n\"isAccountNonLocked\": true,\r\n\"isCredentialsNonExpired\": true\r\n}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{host}}/app/api/shippings?orderId=1&productId=1",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"app",
+						"api",
+						"shippings"
+					],
+					"query": [
+						{
+							"key": "orderId",
+							"value": "1"
+						},
+						{
+							"key": "productId",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET favourites",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwtToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"userId\": \"{{$randomInt}}\",\r\n\"firstName\": \"Alejandro\",\r\n\"lastName\": \"Cordoba\",\r\n\"imageUrl\": \"{{$randomUrl}}\",\r\n\"email\": \"{{$randomEmail}}\",\r\n\"addressDtos\": [{\r\n\"fullAddress\": \"123 Main St\",\r\n\"postalCode\": \"12345\",\r\n\"city\": \"New York\"\r\n}\r\n],\r\n\"credential\": {\r\n\"username\": \"johndoe\",\r\n\"password\": \"securePassword123\",\r\n\"roleBasedAuthority\": \"ROLE_USER\",\r\n\"isEnabled\": true,\r\n\"isAccountNonExpired\": true,\r\n\"isAccountNonLocked\": true,\r\n\"isCredentialsNonExpired\": true\r\n}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{host}}/app/api/favourites",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"app",
+						"api",
+						"favourites"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET USERS",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwtToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n \"userId\": \"{{$randomInt}}\",\r\n \"firstName\": \"Alejandro\",\r\n \"lastName\": \"Cordoba\",\r\n \"imageUrl\": \"{{$randomUrl}}\",\r\n \"email\": \"{{$randomEmail}}\",\r\n \"addressDtos\": [\r\n{\r\n \"fullAddress\": \"123 Main St\",\r\n \"postalCode\": \"12345\",\r\n \"city\": \"New York\"\r\n }\r\n ],\r\n \"credential\": {\r\n \"username\": \"johndoe\",\r\n \"password\": \"securePassword123\",\r\n \"roleBasedAuthority\": \"ROLE_USER\",\r\n \"isEnabled\": true,\r\n \"isAccountNonExpired\": true,\r\n \"isAccountNonLocked\": true,\r\n \"isCredentialsNonExpired\": true\r\n }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{host}}/app/api/users",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"app",
+						"api",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET CREDENTIALS",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwtToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n \"userId\": \"{{$randomInt}}\",\r\n \"firstName\": \"Alejandro\",\r\n \"lastName\": \"Cordoba\",\r\n \"imageUrl\": \"{{$randomUrl}}\",\r\n \"email\": \"{{$randomEmail}}\",\r\n \"addressDtos\": [\r\n{\r\n \"fullAddress\": \"123 Main St\",\r\n \"postalCode\": \"12345\",\r\n \"city\": \"New York\"\r\n }\r\n ],\r\n \"credential\": {\r\n \"username\": \"pepepipi\",\r\n \"password\": \"securePassword123\",\r\n \"roleBasedAuthority\": \"ROLE_USER\",\r\n \"isEnabled\": true,\r\n \"isAccountNonExpired\": true,\r\n \"isAccountNonLocked\": true,\r\n \"isCredentialsNonExpired\": true\r\n }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{host}}/app/api/credentials",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"app",
+						"api",
+						"credentials"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "host",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "jwtToken",
+			"value": ""
+		}
+	]
+}
