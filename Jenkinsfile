@@ -5,7 +5,7 @@ pipeline {
         DOCKERHUB_USER = "sebas3004tian"
         IMAGE_TAG = "${env.BRANCH_NAME}-2"
         BRANCH_NAME = "${env.BRANCH_NAME}"
-        REPO_URL = "https://github.com/ecommerce-microservice-Devops-project/helm-charts-microservices.git"
+        REPO_URL = "https://github.com/ecommerce-microservice-Devops-project/ecommerce-devops.git"
         K8S_NAMESPACE = "ecommerce-${BRANCH_NAME}" 
     }
 
