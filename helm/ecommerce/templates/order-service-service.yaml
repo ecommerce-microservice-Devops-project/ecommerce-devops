@@ -7,7 +7,8 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - port: {{ index .Values.services "order-service" "service" "port" }}
+    - name: http
+      port: {{ index .Values.services "order-service" "service" "port" }}
       targetPort: {{ index .Values.services "order-service" "service" "port" }}
   selector:
     app: order-service
