@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: favourite-service-monitor
+  labels:
+    release: monitoring-stack
+spec:
+  selector:
+    matchLabels:
+      app: favourite-service
+  namespaceSelector:
+    matchNames:
+    - ecommerce-develop
+    - ecommerce-stage
+    - ecommerce-master
+  endpoints:
+  - port: http
+    path: favourite-service/actuator/prometheus
+    interval: 15s

@@ -18,11 +18,27 @@ spec:
       - name: wait-for-cloud-config
         image: curlimages/curl:8.8.0
         command: ['sh', '-c', 'until curl -s http://cloud-config:9296/actuator/health | grep UP; do echo waiting for cloud-config; sleep 3; done']    
+      securityContext:
+        runAsNonRoot: {{ .Values.securityContext.runAsNonRoot | default true }}
+        runAsUser: {{ .Values.securityContext.runAsUser | default 1000 }}
+        runAsGroup: {{ .Values.securityContext.runAsGroup | default 1000 }}
+        fsGroup: {{ .Values.securityContext.fsGroup | default 1000 }}
       containers:
         - name: order-service
           image: {{ index .Values.services "order-service" "image" "repository" }}:{{ index .Values.services "order-service" "image" "tag" }}
           ports:
             - containerPort: {{ index .Values.services "order-service" "service" "port" }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: {{ .Values.securityContext.runAsUser | default 1000 }}
+            runAsGroup: {{ .Values.securityContext.runAsGroup | default 1000 }}
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: false
+            seccompProfile:
+              type: RuntimeDefault
           env:
             - name: EUREKA_INSTANCE_HOSTNAME
               value: order-service

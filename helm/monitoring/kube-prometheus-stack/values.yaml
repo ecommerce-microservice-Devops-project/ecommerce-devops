@@ -1,0 +1,17 @@
+prometheus:
+  prometheusSpec:
+    serviceMonitorSelectorNilUsesHelmValues: false
+    serviceMonitorSelector: {}
+    podMonitorSelector: {}
+    scrapeInterval: 15s
+    retention: 7d
+
+grafana:
+  defaultDashboardsEnabled: true
+  adminUser: admin
+  adminPassword: admin
+  service:
+    type: ClusterIP
+
+alertmanager:
+  enabled: true

@@ -14,6 +14,11 @@ spec:
       labels:
         app: service-discovery
     spec:
+      securityContext:
+        runAsNonRoot: {{ .Values.securityContext.runAsNonRoot | default true }}
+        runAsUser: {{ .Values.securityContext.runAsUser | default 1000 }}
+        runAsGroup: {{ .Values.securityContext.runAsGroup | default 1000 }}
+        fsGroup: {{ .Values.securityContext.fsGroup | default 1000 }}
       containers:
 
         - name: service-discovery
@@ -33,6 +38,17 @@ spec:
               port: {{ index .Values.services "service-discovery" "service" "port" }}
             initialDelaySeconds: 10
             periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: {{ .Values.securityContext.runAsUser | default 1000 }}
+            runAsGroup: {{ .Values.securityContext.runAsGroup | default 1000 }}
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: false
+            seccompProfile:
+              type: RuntimeDefault
           env:
             - name: SPRING_CONFIG_IMPORT
               valueFrom:
