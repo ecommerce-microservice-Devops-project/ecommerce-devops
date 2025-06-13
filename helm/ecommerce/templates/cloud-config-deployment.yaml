@@ -20,9 +20,10 @@ spec:
           command: ['sh', '-c', 'until wget -q --spider http://service-discovery:{{ index .Values.services "service-discovery" "service" "port" }}/actuator/health; do echo waiting for service-discovery; sleep 5; done']
 
       securityContext:
-        runAsNonRoot: true
-        runAsUser: 1000
-        fsGroup: 2000
+        runAsNonRoot: {{ .Values.securityContext.runAsNonRoot | default true }}
+        runAsUser: {{ .Values.securityContext.runAsUser | default 1000 }}
+        runAsGroup: {{ .Values.securityContext.runAsGroup | default 1000 }}
+        fsGroup: {{ .Values.securityContext.fsGroup | default 1000 }}
       containers:
         - name: cloud-config
           image: {{ index .Values.services "cloud-config" "image" "repository" }}:{{ index .Values.services "cloud-config" "image" "tag" }}
@@ -30,9 +31,19 @@ spec:
             - containerPort: {{ index .Values.services "cloud-config" "service" "port" }}
           securityContext:
             allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: {{ .Values.securityContext.runAsUser | default 1000 }}
+            runAsGroup: {{ .Values.securityContext.runAsGroup | default 1000 }}
             capabilities:
               drop:
+<<<<<<< HEAD
                 - ALL
+=======
+              - ALL
+            readOnlyRootFilesystem: false
+            seccompProfile:
+              type: RuntimeDefault
+>>>>>>> 900f734b8a26babacca6eab2ed75eae64059e82f
 
           livenessProbe:
             httpGet:

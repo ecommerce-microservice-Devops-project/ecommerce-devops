@@ -20,9 +20,10 @@ spec:
         command: ['sh', '-c', 'until curl -s http://cloud-config:9296/actuator/health | grep UP; do echo waiting for cloud-config; sleep 3; done']
 
       securityContext:
-        runAsNonRoot: true
-        runAsUser: 1000
-        fsGroup: 2000
+        runAsNonRoot: {{ .Values.securityContext.runAsNonRoot | default true }}
+        runAsUser: {{ .Values.securityContext.runAsUser | default 1000 }}
+        runAsGroup: {{ .Values.securityContext.runAsGroup | default 1000 }}
+        fsGroup: {{ .Values.securityContext.fsGroup | default 1000 }}
       containers:
         - name: api-gateway
           image: {{ index .Values.services "api-gateway" "image" "repository" }}:{{ index .Values.services "api-gateway" "image" "tag" }}
@@ -30,9 +31,15 @@ spec:
             - containerPort: {{ index .Values.services "api-gateway" "service" "port" }}
           securityContext:
             allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: {{ .Values.securityContext.runAsUser | default 1000 }}
+            runAsGroup: {{ .Values.securityContext.runAsGroup | default 1000 }}
             capabilities:
               drop:
-                - ALL
+              - ALL
+            readOnlyRootFilesystem: false
+            seccompProfile:
+              type: RuntimeDefault
           env:
             - name: EUREKA_INSTANCE_HOSTNAME
               value: api-gateway
