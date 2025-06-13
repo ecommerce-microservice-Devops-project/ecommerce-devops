@@ -22,6 +22,42 @@ pipeline {
                 git branch: "${BRANCH_NAME}", url: "${REPO_URL}"
             }
         }
+        stage('Actualizar tags') {
+            steps {
+                sh '''
+                SERVICES=(
+                "api-gateway"
+                "cloud-config"
+                "favourite-service"
+                "order-service"
+                "payment-service"
+                "product-service"
+                "proxy-client"
+                "service-discovery"
+                "shipping-service"
+                "user-service"
+                )
+
+                FILE="helm/ecommerce/values-${BRANCH_NAME}.yaml"
+
+                for SERVICE in "${SERVICES[@]}"; do
+                IMAGE_REPO="sebas3004tian/${SERVICE}-ecommerce-boot"
+
+                TAG=$(curl -s "https://hub.docker.com/v2/repositories/${IMAGE_REPO}/tags?page_size=100" |
+                    grep -o '"name":"[^"]*"' |
+                    sed 's/"name":"//;s/"//' |
+                    grep "^${BRANCH_NAME}-" |
+                    sort -V |
+                    tail -n 1)
+
+                echo "Último tag para $SERVICE: $TAG"
+
+                sed -i "/${SERVICE}:$/,/tag:/s/tag: .*/tag: ${TAG}/" "$FILE"
+                done
+                '''
+            }
+        }
+
         stage('Deploy Services') {
             steps {
                 dir('helm') {
