@@ -14,11 +14,20 @@ spec:
       labels:
         app: cloud-config
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 2000
       containers:
         - name: cloud-config
           image: {{ index .Values.services "cloud-config" "image" "repository" }}:{{ index .Values.services "cloud-config" "image" "tag" }}
           ports:
             - containerPort: {{ index .Values.services "cloud-config" "service" "port" }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           env:
             {{- range $key, $value := .Values.commonEnv }}
             - name: {{ $key }}

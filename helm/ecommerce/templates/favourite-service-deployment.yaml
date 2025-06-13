@@ -14,11 +14,20 @@ spec:
       labels:
         app: favourite-service
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 2000
       containers:
         - name: favourite-service
           image: {{ index .Values.services "favourite-service" "image" "repository" }}:{{ index .Values.services "favourite-service" "image" "tag" }}
           ports:
             - containerPort: {{ index .Values.services "favourite-service" "service" "port" }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           env:
             - name: EUREKA_INSTANCE_HOSTNAME
               value: favourite-service

@@ -14,11 +14,20 @@ spec:
       labels:
         app: payment-service
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 2000
       containers:
         - name: payment-service
           image: {{ index .Values.services "payment-service" "image" "repository" }}:{{ index .Values.services "payment-service" "image" "tag" }}
           ports:
             - containerPort: {{ index .Values.services "payment-service" "service" "port" }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           env:
             - name: EUREKA_INSTANCE_HOSTNAME
               value: payment-service
