@@ -79,7 +79,6 @@ services:
 
   product-service:
     enabled: true
-    hostname: product-service
     image:
       repository: sebas3004tian/product-service-ecommerce-boot
       tag: develop-2

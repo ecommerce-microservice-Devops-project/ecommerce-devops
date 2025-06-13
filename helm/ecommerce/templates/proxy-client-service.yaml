@@ -7,7 +7,8 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - port: {{ index .Values.services "proxy-client" "service" "port" }}
+    - name: http  
+      port: {{ index .Values.services "proxy-client" "service" "port" }}
       targetPort: {{ index .Values.services "proxy-client" "service" "port" }}
   selector:
     app: proxy-client

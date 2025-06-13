@@ -7,7 +7,8 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - port: {{ index .Values.services "zipkin" "service" "port" }}
+    - name: http
+      port: {{ index .Values.services "zipkin" "service" "port" }}
       targetPort: {{ index .Values.services "zipkin" "service" "port" }}
   selector:
     app: zipkin
