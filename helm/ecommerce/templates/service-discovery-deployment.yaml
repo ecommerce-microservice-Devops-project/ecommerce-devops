@@ -14,12 +14,17 @@ spec:
       labels:
         app: service-discovery
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 2000
       containers:
 
         - name: service-discovery
           image: {{ index .Values.services "service-discovery" "image" "repository" }}:{{ index .Values.services "service-discovery" "image" "tag" }}
           ports:
             - containerPort: {{ index .Values.services "service-discovery" "service" "port" }}
+<<<<<<< HEAD
           livenessProbe:
             httpGet:
               path: /actuator/health
@@ -33,6 +38,13 @@ spec:
               port: {{ index .Values.services "service-discovery" "service" "port" }}
             initialDelaySeconds: 10
             periodSeconds: 5
+=======
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+>>>>>>> 0f8075a5a9b7a8c66e4712150e4b9f9e04cbf0d3
           env:
             - name: SPRING_CONFIG_IMPORT
               valueFrom:

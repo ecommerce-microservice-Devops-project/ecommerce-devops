@@ -19,11 +19,20 @@ spec:
           image: busybox:1.36
           command: ['sh', '-c', 'until wget -q --spider http://service-discovery:{{ index .Values.services "service-discovery" "service" "port" }}/actuator/health; do echo waiting for service-discovery; sleep 5; done']
 
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 2000
       containers:
         - name: cloud-config
           image: {{ index .Values.services "cloud-config" "image" "repository" }}:{{ index .Values.services "cloud-config" "image" "tag" }}
           ports:
             - containerPort: {{ index .Values.services "cloud-config" "service" "port" }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
 
           livenessProbe:
             httpGet:

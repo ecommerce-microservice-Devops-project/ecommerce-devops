@@ -18,11 +18,20 @@ spec:
       - name: wait-for-cloud-config
         image: curlimages/curl:8.8.0
         command: ['sh', '-c', 'until curl -s http://cloud-config:9296/actuator/health | grep UP; do echo waiting for cloud-config; sleep 3; done']    
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 2000
       containers:
         - name: payment-service
           image: {{ index .Values.services "payment-service" "image" "repository" }}:{{ index .Values.services "payment-service" "image" "tag" }}
           ports:
             - containerPort: {{ index .Values.services "payment-service" "service" "port" }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           env:
             - name: EUREKA_INSTANCE_HOSTNAME
               value: payment-service
