@@ -11,6 +11,13 @@ defaults:
   hpa:
     enabled: false
 
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+
+
 commonEnv:
   EUREKA_CLIENT_AVAILABILITYZONES_DEFAULT: myzone
   EUREKA_CLIENT_REGION: default
