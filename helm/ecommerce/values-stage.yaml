@@ -39,7 +39,11 @@ services:
     service:
       port: 8080
     hpa:
-      enabled: false
+      enabled: true
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 70
+
 
   cloud-config:
     enabled: true
@@ -50,7 +54,11 @@ services:
     service:
       port: 9296
     hpa:
-      enabled: false
+      enabled: true
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 70
+
 
   favourite-service:
     enabled: true
@@ -61,7 +69,11 @@ services:
     service:
       port: 8800
     hpa:
-      enabled: false
+      enabled: true
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 70
+
 
   order-service:
     enabled: true
@@ -72,7 +84,11 @@ services:
     service:
       port: 8300
     hpa:
-      enabled: false
+      enabled: true
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 70
+
 
   payment-service:
     enabled: true
@@ -83,7 +99,11 @@ services:
     service:
       port: 8400
     hpa:
-      enabled: false
+      enabled: true
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 70
+
 
   product-service:
     enabled: true
@@ -94,7 +114,11 @@ services:
     service:
       port: 8500
     hpa:
-      enabled: false
+      enabled: true
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 70
+
 
   proxy-client:
     enabled: true
@@ -105,7 +129,11 @@ services:
     service:
       port: 8900
     hpa:
-      enabled: false
+      enabled: true
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 70
+
 
   service-discovery:
     enabled: true
@@ -116,7 +144,11 @@ services:
     service:
       port: 8761
     hpa:
-      enabled: false
+      enabled: true
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 70
+
 
   shipping-service:
     enabled: true
@@ -127,7 +159,11 @@ services:
     service:
       port: 8600
     hpa:
-      enabled: false
+      enabled: true
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 70
+
 
   user-service:
     enabled: true
@@ -138,7 +174,11 @@ services:
     service:
       port: 8700
     hpa:
-      enabled: false
+      enabled: true
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 70
+
 
   zipkin:
     enabled: true

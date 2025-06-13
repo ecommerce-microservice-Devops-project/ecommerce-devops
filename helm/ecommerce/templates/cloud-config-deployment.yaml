@@ -36,14 +36,10 @@ spec:
             runAsGroup: {{ .Values.securityContext.runAsGroup | default 1000 }}
             capabilities:
               drop:
-<<<<<<< HEAD
-                - ALL
-=======
               - ALL
             readOnlyRootFilesystem: false
             seccompProfile:
               type: RuntimeDefault
->>>>>>> 900f734b8a26babacca6eab2ed75eae64059e82f
 
           livenessProbe:
             httpGet:
