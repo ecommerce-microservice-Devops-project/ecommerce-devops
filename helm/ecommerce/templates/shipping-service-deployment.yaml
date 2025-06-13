@@ -14,11 +14,20 @@ spec:
       labels:
         app: shipping-service
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 2000
       containers:
         - name: shipping-service
           image: {{ index .Values.services "shipping-service" "image" "repository" }}:{{ index .Values.services "shipping-service" "image" "tag" }}
           ports:
             - containerPort: {{ index .Values.services "shipping-service" "service" "port" }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           env:
             - name: EUREKA_INSTANCE_HOSTNAME
               value: shipping-service

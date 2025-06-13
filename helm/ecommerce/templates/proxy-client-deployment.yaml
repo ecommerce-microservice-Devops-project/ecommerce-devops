@@ -15,11 +15,20 @@ spec:
         app: proxy-client
         network: microservices_network
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 2000
       containers:
         - name: proxy-client
           image: {{ index .Values.services "proxy-client" "image" "repository" }}:{{ index .Values.services "proxy-client" "image" "tag" }}
           ports:
             - containerPort: {{ index .Values.services "proxy-client" "service" "port" }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           env:
             - name: EUREKA_INSTANCE_HOSTNAME
               value: proxy-client

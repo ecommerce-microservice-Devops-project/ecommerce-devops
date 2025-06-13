@@ -14,11 +14,20 @@ spec:
       labels:
         app: user-service
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 2000
       containers:
         - name: user-service
           image: {{ index .Values.services "user-service" "image" "repository" }}:{{ index .Values.services "user-service" "image" "tag" }}
           ports:
             - containerPort: {{ index .Values.services "user-service" "service" "port" }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           env:
             - name: EUREKA_CLIENT_AVAILABILITYZONES_DEFAULT
               valueFrom:

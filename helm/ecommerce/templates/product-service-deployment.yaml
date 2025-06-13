@@ -15,11 +15,20 @@ spec:
         app: product-service
         io.kompose.network/microservices_network: "true"
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 2000
       containers:
         - name: product-service
           image: {{ index .Values.services "product-service" "image" "repository" }}:{{ index .Values.services "product-service" "image" "tag" }}
           ports:
             - containerPort: {{ index .Values.services "product-service" "service" "port" }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           env:
             - name: EUREKA_INSTANCE_HOSTNAME
               value: product-service

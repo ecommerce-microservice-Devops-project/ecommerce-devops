@@ -14,11 +14,20 @@ spec:
       labels:
         app: service-discovery
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 2000
       containers:
         - name: service-discovery
           image: {{ index .Values.services "service-discovery" "image" "repository" }}:{{ index .Values.services "service-discovery" "image" "tag" }}
           ports:
             - containerPort: {{ index .Values.services "service-discovery" "service" "port" }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           env:
             - name: SPRING_CONFIG_IMPORT
               valueFrom:

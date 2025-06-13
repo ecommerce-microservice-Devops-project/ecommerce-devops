@@ -14,11 +14,20 @@ spec:
       labels:
         app: order-service
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 2000
       containers:
         - name: order-service
           image: {{ index .Values.services "order-service" "image" "repository" }}:{{ index .Values.services "order-service" "image" "tag" }}
           ports:
             - containerPort: {{ index .Values.services "order-service" "service" "port" }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           env:
             - name: EUREKA_INSTANCE_HOSTNAME
               value: order-service
