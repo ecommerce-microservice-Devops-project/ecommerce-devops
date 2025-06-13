@@ -1,5 +1,5 @@
 global:
-  namespace: ecommerce-dev
+  namespace: ecommerce-develop
 
 defaults:
   replicas: 1
@@ -10,6 +10,12 @@ defaults:
     port: 80
   hpa:
     enabled: false
+
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
 
 commonEnv:
   EUREKA_CLIENT_AVAILABILITYZONES_DEFAULT: myzone
@@ -79,7 +85,6 @@ services:
 
   product-service:
     enabled: true
-    hostname: product-service
     image:
       repository: sebas3004tian/product-service-ecommerce-boot
       tag: develop-2
