@@ -30,5 +30,5 @@ for SERVICE in "${SERVICES[@]}"; do
 
   # Reemplazar el tag correspondiente en el archivo YAML
   # Asume que la línea `tag:` está presente en la forma `.image.tag`
-  #sed -i "/${SERVICE}:$/,/tag:/s/tag: .*/tag: ${TAG}/" "$FILE"
+  sed -i "/${SERVICE}:$/,/tag:/s/tag: .*/tag: ${TAG}/" "$FILE"
 done
