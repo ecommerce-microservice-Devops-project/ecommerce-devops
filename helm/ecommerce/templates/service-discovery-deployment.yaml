@@ -4,6 +4,7 @@ metadata:
   name: service-discovery
   labels:
     app: service-discovery
+    role: core
 spec:
   replicas: {{ .Values.defaults.replicas }}
   selector:

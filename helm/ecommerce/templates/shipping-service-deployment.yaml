@@ -4,6 +4,7 @@ metadata:
   name: shipping-service
   labels:
     app: shipping-service
+    tier: business
 spec:
   replicas: {{ .Values.defaults.replicas }}
   selector:

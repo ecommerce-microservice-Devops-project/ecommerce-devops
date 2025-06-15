@@ -4,6 +4,7 @@ metadata:
   name: user-service
   labels:
     app: user-service
+    tier: business
 spec:
   replicas: {{ .Values.defaults.replicas }}
   selector:

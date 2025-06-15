@@ -4,6 +4,7 @@ metadata:
   name: payment-service
   labels:
     app: payment-service
+    tier: business
 spec:
   replicas: {{ .Values.defaults.replicas }}
   selector:
