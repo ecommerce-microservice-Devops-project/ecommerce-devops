@@ -24,7 +24,7 @@ pipeline {
         }
         stage('Actualizar tags') {
             steps {
-                sh '''
+                sh '''#!/bin/bash
                 SERVICES=(
                 "api-gateway"
                 "cloud-config"
@@ -60,6 +60,7 @@ pipeline {
                 sed -i "/${SERVICE}:$/,/tag:/s/tag: .*/tag: ${TAG}/" "$FILE"
                 done
                 '''
+
             }
         }
 
