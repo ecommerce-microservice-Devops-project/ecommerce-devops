@@ -1,0 +1,14 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-all-to-zipkin
+  namespace: ecommerce-develop
+spec:
+  podSelector:
+    matchLabels:
+      app: zipkin
+  ingress:
+    - from:
+        - podSelector: {}  # permite de todos los pods del namespace
+  policyTypes:
+    - Ingress

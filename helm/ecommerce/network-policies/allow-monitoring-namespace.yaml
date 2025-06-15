@@ -1,0 +1,12 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-monitoring-namespace
+  namespace: ecommerce-develop
+spec:
+  podSelector: {}  # Aplica a todos los pods del namespace
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          purpose: observability
