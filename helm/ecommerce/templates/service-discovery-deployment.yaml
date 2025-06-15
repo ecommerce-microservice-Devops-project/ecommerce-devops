@@ -14,6 +14,7 @@ spec:
     metadata:
       labels:
         app: service-discovery
+        role: core
     spec:
       securityContext:
         runAsNonRoot: {{ .Values.securityContext.runAsNonRoot | default true }}
