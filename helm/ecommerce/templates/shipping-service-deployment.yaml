@@ -4,6 +4,7 @@ metadata:
   name: shipping-service
   labels:
     app: shipping-service
+    tier: business
 spec:
   replicas: {{ .Values.defaults.replicas }}
   selector:
@@ -13,6 +14,7 @@ spec:
     metadata:
       labels:
         app: shipping-service
+        tier: business
     spec:
       initContainers:
       - name: wait-for-cloud-config

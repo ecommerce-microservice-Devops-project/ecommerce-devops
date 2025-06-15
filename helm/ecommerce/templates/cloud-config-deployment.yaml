@@ -4,6 +4,7 @@ metadata:
   name: cloud-config
   labels:
     app: cloud-config
+    role: core
 spec:
   replicas: {{ .Values.defaults.replicas }}
   selector:
@@ -13,6 +14,7 @@ spec:
     metadata:
       labels:
         app: cloud-config
+        role: core
     spec:
       initContainers:
         - name: wait-for-eureka

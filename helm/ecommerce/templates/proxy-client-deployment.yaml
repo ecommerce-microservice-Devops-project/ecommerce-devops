@@ -14,6 +14,7 @@ spec:
       labels:
         app: proxy-client
         network: microservices_network
+        role: core
     spec:
       initContainers:
       - name: wait-for-cloud-config

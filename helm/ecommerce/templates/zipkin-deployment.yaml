@@ -4,6 +4,7 @@ metadata:
   name: zipkin
   labels:
     app: zipkin
+    role: core
 spec:
   replicas: {{ .Values.defaults.replicas }}
   selector:
@@ -13,6 +14,7 @@ spec:
     metadata:
       labels:
         app: zipkin
+        role: core
     spec:
       containers:
         - name: zipkin

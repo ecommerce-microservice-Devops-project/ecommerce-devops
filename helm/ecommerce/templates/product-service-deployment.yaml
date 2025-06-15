@@ -4,6 +4,7 @@ metadata:
   name: product-service
   labels:
     app: product-service
+    tier: business
 spec:
   replicas: {{ .Values.defaults.replicas }}
   selector:
@@ -14,6 +15,7 @@ spec:
       labels:
         app: product-service
         io.kompose.network/microservices_network: "true"
+        tier: business
     spec:
       initContainers:
       - name: wait-for-cloud-config
