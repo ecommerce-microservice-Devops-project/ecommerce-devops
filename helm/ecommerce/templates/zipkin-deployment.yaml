@@ -18,6 +18,6 @@ spec:
         - name: zipkin
           image: {{ index .Values.services "zipkin" "image" "repository" }}:{{ index .Values.services "zipkin" "image" "tag" }}
           ports:
-            - containerPort: {{ index .Values.services "zipkin" "service" "port" }}
-          resources: {}
+            - containerPort: {{ index .Values.services "zipkin" "service" "port" }} 
+          resources: {{- toYaml .Values.resources | nindent 12 }}
       restartPolicy: Always
