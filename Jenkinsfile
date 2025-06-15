@@ -166,6 +166,24 @@ pipeline {
             }
         }
 
+        stage('Crear usuario ArgoCD') {
+            steps {
+                script {
+                    sh '''#!/bin/bash
+                    PASSWORD_HASH='$2a$10$rRyBsGSHK6.uc8fntPwVIuLVHgsAhAX7TcdrqW/RADU0uh7CaChLa'
+                    CURRENT_TIME=$(date +%FT%T%Z)
+
+                    kubectl -n argocd patch secret argocd-secret \
+                    -p "{\"stringData\": {
+                        \\\"admin.password\\\": \\\"${PASSWORD_HASH}\\\",
+                        \\\"admin.passwordMtime\\\": \\\"${CURRENT_TIME}\\\"
+                    }}"
+                    '''
+                }
+            }
+        }
+
+
     }
 
     post {
