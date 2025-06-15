@@ -2,7 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: allow-core-to-all
-  namespace: ecommerce-develop
+  namespace: {{ .Values.global.namespace }}
 spec:
   podSelector: {}
   ingress:
@@ -15,7 +15,7 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: allow-all-business-traffic
-  namespace: ecommerce-develop
+  namespace: {{ .Values.global.namespace }}
 spec:
   podSelector:
     matchLabels:
@@ -30,7 +30,7 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: allow-all-to-service-discovery
-  namespace: ecommerce-develop
+  namespace: {{ .Values.global.namespace }}
 spec:
   podSelector:
     matchLabels:
@@ -43,7 +43,7 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: allow-all-to-zipkin
-  namespace: ecommerce-develop
+  namespace: {{ .Values.global.namespace }}
 spec:
   podSelector:
     matchLabels:
@@ -58,7 +58,7 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: allow-monitoring-namespace
-  namespace: ecommerce-develop
+  namespace: {{ .Values.global.namespace }}
 spec:
   podSelector: {}  # Aplica a todos los pods del namespace
   ingress:
@@ -71,7 +71,7 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: allow-api-to-proxy
-  namespace: ecommerce-develop
+  namespace: {{ .Values.global.namespace }}
 spec:
   podSelector:
     matchLabels:
@@ -86,7 +86,7 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: allow-proxy-to-business
-  namespace: ecommerce-develop
+  namespace: {{ .Values.global.namespace }}
 spec:
   podSelector:
     matchLabels:
@@ -101,7 +101,7 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: allow-ingress-to-api
-  namespace: ecommerce-develop
+  namespace: {{ .Values.global.namespace }}
 spec:
   podSelector:
     matchLabels:
