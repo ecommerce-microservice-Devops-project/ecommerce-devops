@@ -27,7 +27,8 @@ spec:
         - name: shipping-service
           image: {{ index .Values.services "shipping-service" "image" "repository" }}:{{ index .Values.services "shipping-service" "image" "tag" }}
           ports:
-            - containerPort: {{ index .Values.services "shipping-service" "service" "port" }}
+            - containerPort: {{ index .Values.services "shipping-service" "service" "port" }} 
+          resources: {{- toYaml (index .Values.services "shipping-service" "resources") | nindent 12 }}
           securityContext:
             allowPrivilegeEscalation: false
             runAsNonRoot: true
