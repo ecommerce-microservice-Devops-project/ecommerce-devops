@@ -4,6 +4,8 @@ metadata:
   name: proxy-client
   labels:
     app: proxy-client
+    tier: business
+    role: core
 spec:
   replicas: {{ .Values.defaults.replicas }}
   selector:
@@ -15,6 +17,7 @@ spec:
         app: proxy-client
         network: microservices_network
         role: core
+        tier: business
     spec:
       initContainers:
       - name: wait-for-cloud-config
