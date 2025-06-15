@@ -172,10 +172,17 @@ pipeline {
                     sh '''#!/bin/bash
         PASSWORD_HASH='$2a$10$rRyBsGSHK6.uc8fntPwVIuLVHgsAhAX7TcdrqW/RADU0uh7CaChLa'
         CURRENT_TIME=$(date +%Y-%m-%dT%H:%M:%SZ)
+        PATCH_JSON=$(cat <<EOF
+        {
+        "stringData": {
+            "admin.password": "${PASSWORD_HASH}",
+            "admin.passwordMtime": "${CURRENT_TIME}"
+        }
+        }
+        EOF
+        )
 
-        kubectl -n argocd patch secret argocd-secret \
-        --type merge \
-        -p "{\"stringData\": {\"admin.password\": \\\"${PASSWORD_HASH}\\\", \"admin.passwordMtime\": \\\"${CURRENT_TIME}\\\"}}"
+        kubectl -n argocd patch secret argocd-secret --type=merge -p "$PATCH_JSON"
         '''
                 }
             }
