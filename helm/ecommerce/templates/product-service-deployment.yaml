@@ -15,6 +15,7 @@ spec:
       labels:
         app: product-service
         io.kompose.network/microservices_network: "true"
+        tier: business
     spec:
       initContainers:
       - name: wait-for-cloud-config
