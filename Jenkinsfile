@@ -57,7 +57,6 @@ pipeline {
                     done
                     '''
                 }
-
             }
         }
 
