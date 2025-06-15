@@ -10,6 +10,10 @@ defaults:
     port: 80
   hpa:
     enabled: false
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
 
 securityContext:
   runAsNonRoot: true
@@ -41,8 +45,12 @@ services:
     hpa:
       enabled: true
       minReplicas: 1
-      maxReplicas: 3
+      maxReplicas: 2
       targetCPUUtilizationPercentage: 70
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "128Mi"
 
 
   cloud-config:
@@ -56,8 +64,12 @@ services:
     hpa:
       enabled: true
       minReplicas: 1
-      maxReplicas: 3
+      maxReplicas: 2
       targetCPUUtilizationPercentage: 70
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "128Mi"
 
 
   favourite-service:
@@ -71,8 +83,12 @@ services:
     hpa:
       enabled: true
       minReplicas: 1
-      maxReplicas: 3
+      maxReplicas: 2
       targetCPUUtilizationPercentage: 70
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "128Mi"
 
 
   order-service:
@@ -86,8 +102,12 @@ services:
     hpa:
       enabled: true
       minReplicas: 1
-      maxReplicas: 3
+      maxReplicas: 2
       targetCPUUtilizationPercentage: 70
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "128Mi"
 
 
   payment-service:
@@ -101,8 +121,12 @@ services:
     hpa:
       enabled: true
       minReplicas: 1
-      maxReplicas: 3
+      maxReplicas: 2
       targetCPUUtilizationPercentage: 70
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "128Mi"
 
 
   product-service:
@@ -116,8 +140,12 @@ services:
     hpa:
       enabled: true
       minReplicas: 1
-      maxReplicas: 3
+      maxReplicas: 2
       targetCPUUtilizationPercentage: 70
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "128Mi"
 
 
   proxy-client:
@@ -131,8 +159,12 @@ services:
     hpa:
       enabled: true
       minReplicas: 1
-      maxReplicas: 3
+      maxReplicas: 2
       targetCPUUtilizationPercentage: 70
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "128Mi"
 
 
   service-discovery:
@@ -146,8 +178,12 @@ services:
     hpa:
       enabled: true
       minReplicas: 1
-      maxReplicas: 3
+      maxReplicas: 2
       targetCPUUtilizationPercentage: 70
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "128Mi"
 
 
   shipping-service:
@@ -161,8 +197,12 @@ services:
     hpa:
       enabled: true
       minReplicas: 1
-      maxReplicas: 3
+      maxReplicas: 2
       targetCPUUtilizationPercentage: 70
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "128Mi"
 
 
   user-service:
@@ -176,8 +216,12 @@ services:
     hpa:
       enabled: true
       minReplicas: 1
-      maxReplicas: 3
+      maxReplicas: 2
       targetCPUUtilizationPercentage: 70
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "128Mi"
 
 
   zipkin:
@@ -189,3 +233,7 @@ services:
       port: 9411
     hpa:
       enabled: false
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "128Mi"

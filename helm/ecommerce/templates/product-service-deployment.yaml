@@ -29,7 +29,7 @@ spec:
           image: {{ index .Values.services "product-service" "image" "repository" }}:{{ index .Values.services "product-service" "image" "tag" }}
           ports:
             - containerPort: {{ index .Values.services "product-service" "service" "port" }} 
-          resources: {{- toYaml .Values.resources | nindent 12 }}
+          resources: {{- toYaml (index .Values.services "product-service" "resources") | nindent 12 }}
           securityContext:
             allowPrivilegeEscalation: false
             runAsNonRoot: true

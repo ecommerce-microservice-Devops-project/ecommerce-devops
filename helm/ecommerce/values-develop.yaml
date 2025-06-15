@@ -8,6 +8,12 @@ defaults:
   service:
     type: ClusterIP
     port: 80
+  hpa:
+    enabled: false
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
 
 
 securityContext:
@@ -43,11 +49,8 @@ services:
       targetCPUUtilizationPercentage: 70
     resources:
       requests:
-        cpu: "100m"
+        cpu: "50m"
         memory: "128Mi"
-      limits:
-        cpu: "200m"
-        memory: "256Mi"
       
 
 
@@ -66,11 +69,8 @@ services:
       targetCPUUtilizationPercentage: 70 
     resources:
       requests:
-        cpu: "100m"
+        cpu: "50m"
         memory: "128Mi"
-      limits:
-        cpu: "200m"
-        memory: "256Mi"
 
   favourite-service:
     enabled: true
@@ -87,11 +87,8 @@ services:
       targetCPUUtilizationPercentage: 70
     resources:
       requests:
-        cpu: "100m"
+        cpu: "50m"
         memory: "128Mi"
-      limits:
-        cpu: "200m"
-        memory: "256Mi"
 
   order-service:
     enabled: true
@@ -108,11 +105,8 @@ services:
       targetCPUUtilizationPercentage: 70
     resources:
       requests:
-        cpu: "100m"
+        cpu: "50m"
         memory: "128Mi"
-      limits:
-        cpu: "200m"
-        memory: "256Mi"
 
   payment-service:
     enabled: true
@@ -129,11 +123,8 @@ services:
       targetCPUUtilizationPercentage: 70
     resources:
       requests:
-        cpu: "100m"
+        cpu: "50m"
         memory: "128Mi"
-      limits:
-        cpu: "200m"
-        memory: "256Mi"
 
   product-service:
     enabled: true
@@ -150,11 +141,8 @@ services:
       targetCPUUtilizationPercentage: 70
     resources:
       requests:
-        cpu: "100m"
+        cpu: "50m"
         memory: "128Mi"
-      limits:
-        cpu: "200m"
-        memory: "256Mi"
 
   proxy-client:
     enabled: true
@@ -171,11 +159,8 @@ services:
       targetCPUUtilizationPercentage: 70
     resources:
       requests:
-        cpu: "100m"
+        cpu: "50m"
         memory: "128Mi"
-      limits:
-        cpu: "200m"
-        memory: "256Mi"
 
   service-discovery:
     enabled: true
@@ -192,11 +177,8 @@ services:
       targetCPUUtilizationPercentage: 70
     resources:
       requests:
-        cpu: "100m"
+        cpu: "50m"
         memory: "128Mi"
-      limits:
-        cpu: "200m"
-        memory: "256Mi"
 
   shipping-service:
     enabled: true
@@ -213,11 +195,8 @@ services:
       targetCPUUtilizationPercentage: 70
     resources:
       requests:
-        cpu: "100m"
+        cpu: "50m"
         memory: "128Mi"
-      limits:
-        cpu: "200m"
-        memory: "256Mi"
 
   user-service:
     enabled: true
@@ -234,11 +213,8 @@ services:
       targetCPUUtilizationPercentage: 70
     resources:
       requests:
-        cpu: "100m"
+        cpu: "50m"
         memory: "128Mi"
-      limits:
-        cpu: "200m"
-        memory: "256Mi"
 
   zipkin:
     enabled: true
@@ -251,8 +227,5 @@ services:
       enabled: false
     resources:
       requests:
-        cpu: "100m"
+        cpu: "50m"
         memory: "128Mi"
-      limits:
-        cpu: "200m"
-        memory: "256Mi"

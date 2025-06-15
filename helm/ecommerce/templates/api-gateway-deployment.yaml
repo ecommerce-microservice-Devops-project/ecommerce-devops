@@ -28,8 +28,8 @@ spec:
         - name: api-gateway
           image: {{ index .Values.services "api-gateway" "image" "repository" }}:{{ index .Values.services "api-gateway" "image" "tag" }}
           ports:
-            - containerPort: {{ index .Values.services "api-gateway" "service" "port" }} 
-          resources: {{- toYaml .Values.resources | nindent 12 }}
+            - containerPort: {{ index .Values.services "api-gateway" "service" "port" }}
+          resources: {{- toYaml (index .Values.services "api-gateway" "resources") | nindent 12 }}
           securityContext:
             allowPrivilegeEscalation: false
             runAsNonRoot: true
