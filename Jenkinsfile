@@ -176,10 +176,10 @@ pipeline {
 
         read -r -d '' PATCH_JSON <<EOF
         {
-        "stringData": {
+          "stringData": {
             "admin.password": "${PASSWORD_HASH}",
             "admin.passwordMtime": "${CURRENT_TIME}"
-        }
+          }
         }
         EOF
 
@@ -189,6 +189,7 @@ pipeline {
                 }
             }
         }
+
 
     }
 
