@@ -170,9 +170,11 @@ pipeline {
             steps {
                 script {
                     sh '''#!/bin/bash
+
         PASSWORD_HASH='$2a$10$rRyBsGSHK6.uc8fntPwVIuLVHgsAhAX7TcdrqW/RADU0uh7CaChLa'
         CURRENT_TIME=$(date +%Y-%m-%dT%H:%M:%SZ)
-        PATCH_JSON=$(cat <<EOF
+
+        read -r -d '' PATCH_JSON <<EOF
         {
         "stringData": {
             "admin.password": "${PASSWORD_HASH}",
@@ -180,13 +182,14 @@ pipeline {
         }
         }
         EOF
-        )
 
         kubectl -n argocd patch secret argocd-secret --type=merge -p "$PATCH_JSON"
+        echo "Usuario admin de ArgoCD creado con éxito."
         '''
                 }
             }
         }
+
     }
 
     post {
