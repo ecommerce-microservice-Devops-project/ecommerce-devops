@@ -1,17 +1,14 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: api-gateway-to-proxy-client
-  namespace: ecommerce-dev
+  name: allow-api-to-proxy
+  namespace: ecommerce-develop
 spec:
   podSelector:
     matchLabels:
       app: proxy-client
-  policyTypes:
-    - Ingress
   ingress:
-    - from:
-        - podSelector:
-            matchLabels:
-              app: api-gateway
-
+  - from:
+    - podSelector:
+        matchLabels:
+          app: api-gateway
