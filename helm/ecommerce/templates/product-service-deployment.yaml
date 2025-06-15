@@ -4,6 +4,7 @@ metadata:
   name: product-service
   labels:
     app: product-service
+    tier: business
 spec:
   replicas: {{ .Values.defaults.replicas }}
   selector:

@@ -4,6 +4,7 @@ metadata:
   name: favourite-service
   labels:
     app: favourite-service
+    tier: business
 spec:
   replicas: {{ .Values.defaults.replicas }}
   selector:
