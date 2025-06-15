@@ -121,7 +121,24 @@ pipeline {
                             kubectl apply -f filebeat/filebeat-rbac.yaml -n logging-stack
                             kubectl apply -f filebeat/filebeat-daemonset.yaml -n logging-stack
                         '''
+                        echo 'Añadiendo purpose para monitoreo...'
+                        sh ''' 
+                            kubectl label namespace monitoring purpose=observability
+                            kubectl label namespace logging-stack purpose=observability
+                        '''
                     }
+                }
+            }
+        }
+
+        stage('Añadir purpose para monitoreo') {
+            steps {
+                script {
+                    echo 'Añadiendo purpose para monitoreo...'
+                    sh ''' 
+                        kubectl label namespace monitoring purpose=observability
+                        kubectl label namespace logging-stack purpose=observability
+                    '''
                 }
             }
         }
