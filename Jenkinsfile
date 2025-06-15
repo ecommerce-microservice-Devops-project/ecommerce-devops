@@ -170,20 +170,16 @@ pipeline {
             steps {
                 script {
                     sh '''#!/bin/bash
-                    PASSWORD_HASH='$2a$10$rRyBsGSHK6.uc8fntPwVIuLVHgsAhAX7TcdrqW/RADU0uh7CaChLa'
-                    CURRENT_TIME=$(date +%FT%T%Z)
+        PASSWORD_HASH='$2a$10$rRyBsGSHK6.uc8fntPwVIuLVHgsAhAX7TcdrqW/RADU0uh7CaChLa'
+        CURRENT_TIME=$(date +%Y-%m-%dT%H:%M:%SZ)
 
-                    kubectl -n argocd patch secret argocd-secret \
-                    -p "{\"stringData\": {
-                        \\\"admin.password\\\": \\\"${PASSWORD_HASH}\\\",
-                        \\\"admin.passwordMtime\\\": \\\"${CURRENT_TIME}\\\"
-                    }}"
-                    '''
+        kubectl -n argocd patch secret argocd-secret \
+        --type merge \
+        -p "{\"stringData\": {\"admin.password\": \\\"${PASSWORD_HASH}\\\", \"admin.passwordMtime\": \\\"${CURRENT_TIME}\\\"}}"
+        '''
                 }
             }
         }
-
-
     }
 
     post {
