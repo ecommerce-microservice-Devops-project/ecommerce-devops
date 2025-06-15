@@ -126,17 +126,36 @@ pipeline {
             }
         }
 
-        stage('Wait for Deployment') {
+        stage('Wait for Core Deployments') {
             steps {
                 script {
-                    echo "Esperando a que el despliegue se complete para la rama: ${BRANCH_NAME}"
-                    def deployments = sh(script: "kubectl get deploy -n ${K8S_NAMESPACE} -o jsonpath='{.items[*].metadata.name}'", returnStdout: true).trim().split(" ")
-                    for (d in deployments) {
-                        sh "kubectl rollout status deployment/${d} -n ${K8S_NAMESPACE} --timeout=300s"
+                    echo "Esperando despliegue de servicios CORE"
+                    def coreDeployments = ['cloud-config', 'zipkin', 'service-discovery']
+                    for (d in coreDeployments) {
+                        echo "Esperando despliegue de ${d}"
+                        sh "kubectl rollout status deployment/${d} -n ${K8S_NAMESPACE} --timeout=900s"
                     }
                 }
             }
         }
+
+        stage('Wait for Other Deployments') {
+            steps {
+                script {
+                    echo "Esperando despliegue del resto de microservicios"
+                    // Obtener todos los deployments excepto los CORE
+                    def allDeployments = sh(script: "kubectl get deploy -n ${K8S_NAMESPACE} -o jsonpath='{.items[*].metadata.name}'", returnStdout: true).trim().split(" ")
+                    def coreDeployments = ['cloud-config', 'zipkin', 'service-discovery']
+                    def otherDeployments = allDeployments.findAll { !coreDeployments.contains(it) }
+                    
+                    for (d in otherDeployments) {
+                        echo "Esperando despliegue de ${d}"
+                        sh "kubectl rollout status deployment/${d} -n ${K8S_NAMESPACE} --timeout=600s"
+                    }
+                }
+            }
+        }
+
         stage('Post-Deployment Verification') {
             steps {
                 script {
