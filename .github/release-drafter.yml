@@ -21,26 +21,26 @@ version-resolver:
   default: patch
 
 categories:
-  - title: "🚀 Features"
+  - title: "Features"
     labels:
       - "feature"
       - "enhancement"
       - "minor"
-  - title: "🐛 Bug Fixes"
+  - title: "Bug Fixes"
     labels:
       - "bug"
       - "fix"
       - "patch"
-  - title: "📚 Documentation"
+  - title: "Documentation"
     labels:
       - "docs"
       - "documentation"
-  - title: "🔧 Maintenance"
+  - title: "Maintenance"
     labels:
       - "chore"
       - "maintenance"
       - "dependencies"
-  - title: "💥 Breaking Changes"
+  - title: "Breaking Changes"
     labels:
       - "breaking"
       - "major"
@@ -89,7 +89,7 @@ template: |
 
   ## Contributors
   
-  Thanks to all contributors who made this release possible! 🎉
+  Thanks to all contributors who made this release possible!
 
   **Full Changelog**: https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION
 
