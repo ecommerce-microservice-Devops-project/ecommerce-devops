@@ -1,85 +1,145 @@
-# Proyecto: Despliegue de Microservicios en Kubernetes
 
-A continuación se explican los pasos para desplegar y gestionar los microservicios del proyecto **ecommerce** usando Minikube, Helm y Kubernetes.
+# Guía de Despliegue con Minikube, Terraform, Jenkins y Herramientas de Observabilidad
 
-## 1. Eliminar el namespace anterior (opcional)
+Este documento guía paso a paso el proceso de levantar una infraestructura local con Minikube, Jenkins, ELK, Grafana, Prometheus y ArgoCD, usando Terraform y Helm.
 
-Elimina el namespace `ecommerce-dev` si existe, para empezar desde cero:
+---
 
-```bash
-kubectl delete namespace ecommerce-dev
-```
+## Requisitos previos
 
-## 2. Iniciar Minikube
+- Tener `Minikube`, `kubectl`, `Terraform`, `Helm`, y `Docker` instalados.
+- Tener tu proyecto con Helm Charts y los manifiestos necesarios.
 
-Inicia Minikube con recursos suficientes y habilita el complemento de ingress:
+---
+
+## 1. Iniciar Minikube
+
+Ejecuta Minikube con recursos suficientes y el plugin de red Calico:
 
 ```bash
 minikube start --memory=10240 --cpus=4 --cni=calico
 minikube addons enable ingress
-```
-
-## 3. Crear un nuevo namespace
-
-Crea el namespace donde se desplegarán los recursos:
-
-```bash
-kubectl create namespace ecommerce-dev
-```
-
-## 4. Instalar el chart de Helm
-
-Despliega la aplicación usando Helm en el namespace creado:
-
-```bash
-helm install ecommerce . -n ecommerce-dev -f values.yaml
-```
-
-## 5. Verificar el estado de los recursos
-
-Consulta el estado de los pods y servicios:
-
-```bash
-kubectl get pods -n ecommerce-dev
-kubectl get svc -n ecommerce-dev
-```
-
-Para ver las imágenes usadas por los deployments:
-
-```bash
-kubectl get deployment -n ecommerce-dev -o=jsonpath='{range .items[*]}{.metadata.name}{" => "}{.spec.template.spec.containers[*].image}{"\n"}{end}'
-```
-
-## 6. Redirección de puertos (Port-forward)
-
-Permite el acceso local a los servicios principales:
-
-```bash
-kubectl port-forward svc/zipkin -n ecommerce-dev 9411:9411
-kubectl port-forward svc/api-gateway -n ecommerce-dev 8081:8080
-kubectl port-forward svc/service-discovery -n ecommerce-dev 8761:8761
-```
-
-## 7. Desplegar y verificar Ingress NGINX
-
-Despliega el controlador de ingress y verifica su estado:
-
-```bash
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.10.0/deploy/static/provider/cloud/deploy.yaml
-kubectl get pods -n ingress-nginx
-kubectl get svc -n ingress-nginx
-```
-
-## 8. Configurar el Ingress para el API Gateway
-
-Aplica la configuración de ingress para el API Gateway y verifica su estado:
-
-```bash
-kubectl apply -f api-gateway-ingress.yaml
-kubectl describe ingress api-gateway-ingress -n ecommerce-dev
-kubectl get ingress -n ecommerce-dev -o wide
+minikube addons enable metrics-server
 ```
 
 ---
 
-Estos pasos permiten desplegar y exponer los microservicios del proyecto **ecommerce** en un entorno local de Kubernetes usando Minikube y Helm.
+## 2. Aplicar Terraform
+
+Inicializamos y aplicamos la configuración de infraestructura declarada con Terraform:
+
+```bash
+terraform init
+terraform apply
+```
+
+Esto creará:
+- Namespaces: `jenkins-namespace`, `ecommerce-develop`, etc.
+- Recursos como Jenkins, NetworkPolicies, etc.
+
+---
+
+## 3. Obtener contraseña de Jenkins
+
+Luego de desplegar Jenkins, obtenemos la contraseña inicial para el usuario `admin`:
+
+```bash
+kubectl exec -n jenkins-namespace nombre-del-pod-jenkins -- cat /var/jenkins_home/secrets/initialAdminPassword
+```
+
+Ejemplo (si tu pod se llama `jenkins-5f8887b8b5-ds5dm`):
+
+```bash
+kubectl exec -n jenkins-namespace jenkins-5f8887b8b5-ds5dm -- cat /var/jenkins_home/secrets/initialAdminPassword
+```
+
+---
+
+## 4. Exponer servicios con `port-forward`
+
+```bash
+kubectl port-forward -n jenkins-namespace svc/jenkins-service 9090:8080
+kubectl port-forward svc/monitoring-stack-grafana -n monitoring 3000:80
+kubectl port-forward svc/monitoring-stack-kube-prom-prometheus -n monitoring 9091:9090
+```
+
+---
+
+## 5. Acceder a Grafana
+
+- URL: [http://localhost:3000](http://localhost:3000)
+- Usuario: `admin`
+- Contraseña: `prom-operator`
+
+---
+
+## 6. Configurar Jenkins
+
+1. Accede a Jenkins en: [http://localhost:9090](http://localhost:9090)
+2. Inicia sesión con la contraseña obtenida anteriormente.
+3. Agrega un nuevo **Multibranch Pipeline** apuntando a tu repositorio.
+4. Jenkins detectará las ramas y ejecutará los pipelines automáticamente.
+
+---
+
+## 7. Comando adicional al final del pipeline
+
+Para permitir el despliegue correctamente, añade al final del pipeline:
+
+```bash
+kubectl delete networkpolicy -n ecommerce-develop --all
+helm upgrade ecommerce . -n ecommerce-develop -f values-develop.yaml
+```
+
+---
+
+## 8. Verificación de recursos en Kubernetes
+
+### Ver labels de namespaces y pods
+
+```bash
+kubectl get ns --show-labels
+kubectl get pods -n ecommerce-develop --show-labels
+```
+
+### Ver Horizontal Pod Autoscaler (HPA)
+
+```bash
+kubectl get hpa -n ecommerce-develop
+```
+
+### Ver Network Policies (NP)
+
+```bash
+kubectl get networkpolicy -n ecommerce-develop
+```
+
+---
+
+## 9. Acceder a ELK (Kibana)
+
+```bash
+minikube service kibana -n logging-stack
+```
+
+---
+
+## 10. Acceder a ArgoCD
+
+```bash
+kubectl port-forward svc/argocd-server -n argocd 8082:80
+```
+
+Luego accede a [http://localhost:8082](http://localhost:8082)
+
+---
+
+## Recomendaciones
+
+- Usa `kubectl get all -A` para monitorear todos los recursos.
+- Si algo falla, consulta los logs con:  
+  ```bash
+  kubectl logs nombre-del-pod -n namespace
+  ```
+
+---
