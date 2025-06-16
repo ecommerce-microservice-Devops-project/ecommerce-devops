@@ -72,7 +72,7 @@ pipeline {
 
         stage('Quite Network Policies') {
             steps {
-                sh "kubectl delete networkpolicy -n ecommerce-develop --all"
+                sh "kubectl delete networkpolicy -n ${K8S_NAMESPACE} --all"
             }
         }
 
