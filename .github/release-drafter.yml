@@ -1,0 +1,19 @@
+name-template: "v${{nextVersion}}"
+tag-template: "v${{nextVersion}}"
+categories:
+  - title: "Features"
+    labels:
+      - "feature"
+  - title: "Bug Fixes"
+    labels:
+      - "bug"
+  - title: "Maintenance"
+    labels:
+      - "chore"
+change-template: "- ${{commitMessage}} by @${{author}}"
+template: |
+  ## What's Changed
+
+  $CHANGES
+
+  **Full Changelog**: https://github.com/${{owner}}/${{repo}}/compare/${{previousTag}}...${{tag}}
