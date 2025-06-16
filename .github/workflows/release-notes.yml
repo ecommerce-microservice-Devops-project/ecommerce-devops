@@ -6,7 +6,6 @@ on:
       - master
     types: [closed]
 
-
 permissions:
   contents: write
 
@@ -17,11 +16,15 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          # Necesario para que release-drafter pueda acceder al historial completo
+          fetch-depth: 0
 
       - name: Generate Release Notes
         uses: release-drafter/release-drafter@v5
         with:
-            config-name: release-drafter.yml
-            publish: true
+          config-name: release-drafter.yml
+          # Cambiado a false para crear draft primero y evitar conflictos
+          publish: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
