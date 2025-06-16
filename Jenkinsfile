@@ -70,6 +70,12 @@ pipeline {
             }
         }
 
+        stage('Quite Network Policies') {
+            steps {
+                sh "kubectl delete networkpolicy -n ecommerce-develop --all"
+            }
+        }
+
         stage('Deploy Ingress') {
             steps {
                 script {
@@ -179,6 +185,13 @@ pipeline {
                     echo "Verificando el despliegue para la rama: ${BRANCH_NAME}"
                     sh "kubectl get pods -n ${K8S_NAMESPACE}"
                     sh "kubectl get svc -n ${K8S_NAMESPACE}"
+                }
+            }
+        }
+        stage('Enable Network Policies') {
+            steps {
+                dir('helm') {
+                    sh "helm upgrade ecommerce ./ecommerce -n ${K8S_NAMESPACE} -f ./ecommerce/values-${BRANCH_NAME}.yaml"
                 }
             }
         }
