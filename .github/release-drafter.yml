@@ -1,19 +1,99 @@
-name-template: "v${{nextVersion}}"
-tag-template: "v${{nextVersion}}"
+name-template: "v$RESOLVED_VERSION"
+tag-template: "v$RESOLVED_VERSION"
+
+# Configuración de versionado automático
+version-resolver:
+  major:
+    labels:
+      - "major"
+      - "breaking"
+  minor:
+    labels:
+      - "minor"
+      - "feature"
+      - "enhancement"
+  patch:
+    labels:
+      - "patch"
+      - "bug"
+      - "fix"
+      - "chore"
+  default: patch
+
 categories:
-  - title: "Features"
+  - title: "🚀 Features"
     labels:
       - "feature"
-  - title: "Bug Fixes"
+      - "enhancement"
+      - "minor"
+  - title: "🐛 Bug Fixes"
     labels:
       - "bug"
-  - title: "Maintenance"
+      - "fix"
+      - "patch"
+  - title: "📚 Documentation"
+    labels:
+      - "docs"
+      - "documentation"
+  - title: "🔧 Maintenance"
     labels:
       - "chore"
-change-template: "- ${{commitMessage}} by @${{author}}"
+      - "maintenance"
+      - "dependencies"
+  - title: "💥 Breaking Changes"
+    labels:
+      - "breaking"
+      - "major"
+
+# Template para cada cambio individual
+change-template: "- $TITLE (#$NUMBER) @$AUTHOR"
+
+# Configuración para detectar Conventional Commits
+commitish: master
+filter-by-commitish: true
+
+# Autolabeler para Conventional Commits
+autolabeler:
+  - label: 'feature'
+    title:
+      - '/^feat(\(.+\))?\s*:\s*.+/'
+  - label: 'bug'
+    title:
+      - '/^fix(\(.+\))?\s*:\s*.+/'
+  - label: 'chore'
+    title:
+      - '/^chore(\(.+\))?\s*:\s*.+/'
+      - '/^build(\(.+\))?\s*:\s*.+/'
+      - '/^ci(\(.+\))?\s*:\s*.+/'
+  - label: 'breaking'
+    title:
+      - '/^feat(\(.+\))?\s*!:\s*.+/'
+      - '/^fix(\(.+\))?\s*!:\s*.+/'
+      - '/^chore(\(.+\))?\s*!:\s*.+/'
+  - label: 'docs'
+    title:
+      - '/^docs(\(.+\))?\s*:\s*.+/'
+
+# Excluir ciertos labels de aparecer en el changelog
+exclude-labels:
+  - "skip-changelog"
+  - "duplicate"
+  - "invalid"
+  - "wontfix"
+
+# Template principal del release
 template: |
   ## What's Changed
 
   $CHANGES
 
-  **Full Changelog**: https://github.com/${{owner}}/${{repo}}/compare/${{previousTag}}...${{tag}}
+  ## Contributors
+  
+  Thanks to all contributors who made this release possible! 🎉
+
+  **Full Changelog**: https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION
+
+# Configuración adicional
+sort-direction: ascending
+prerelease: false
+include-pre-releases: false
