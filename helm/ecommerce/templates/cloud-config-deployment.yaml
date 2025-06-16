@@ -4,6 +4,7 @@ metadata:
   name: cloud-config
   labels:
     app: cloud-config
+    role: core
 spec:
   replicas: {{ .Values.defaults.replicas }}
   selector:
@@ -13,6 +14,7 @@ spec:
     metadata:
       labels:
         app: cloud-config
+        role: core
     spec:
       initContainers:
         - name: wait-for-eureka
@@ -28,7 +30,8 @@ spec:
         - name: cloud-config
           image: {{ index .Values.services "cloud-config" "image" "repository" }}:{{ index .Values.services "cloud-config" "image" "tag" }}
           ports:
-            - containerPort: {{ index .Values.services "cloud-config" "service" "port" }}
+            - containerPort: {{ index .Values.services "cloud-config" "service" "port" }} 
+          resources: {{- toYaml (index .Values.services "cloud-config" "resources") | nindent 12 }}
           securityContext:
             allowPrivilegeEscalation: false
             runAsNonRoot: true

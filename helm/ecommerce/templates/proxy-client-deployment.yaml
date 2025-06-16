@@ -4,6 +4,8 @@ metadata:
   name: proxy-client
   labels:
     app: proxy-client
+    tier: business
+    role: core
 spec:
   replicas: {{ .Values.defaults.replicas }}
   selector:
@@ -14,6 +16,8 @@ spec:
       labels:
         app: proxy-client
         network: microservices_network
+        role: core
+        tier: business
     spec:
       initContainers:
       - name: wait-for-cloud-config
@@ -28,7 +32,8 @@ spec:
         - name: proxy-client
           image: {{ index .Values.services "proxy-client" "image" "repository" }}:{{ index .Values.services "proxy-client" "image" "tag" }}
           ports:
-            - containerPort: {{ index .Values.services "proxy-client" "service" "port" }}
+            - containerPort: {{ index .Values.services "proxy-client" "service" "port" }} 
+          resources: {{- toYaml (index .Values.services "proxy-client" "resources") | nindent 12 }}
           securityContext:
             allowPrivilegeEscalation: false
             runAsNonRoot: true

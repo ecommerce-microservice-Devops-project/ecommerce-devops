@@ -4,6 +4,7 @@ metadata:
   name: favourite-service
   labels:
     app: favourite-service
+    tier: business
 spec:
   replicas: {{ .Values.defaults.replicas }}
   selector:
@@ -13,6 +14,7 @@ spec:
     metadata:
       labels:
         app: favourite-service
+        tier: business
     spec:
       initContainers:
       - name: wait-for-cloud-config
@@ -27,7 +29,8 @@ spec:
         - name: favourite-service
           image: {{ index .Values.services "favourite-service" "image" "repository" }}:{{ index .Values.services "favourite-service" "image" "tag" }}
           ports:
-            - containerPort: {{ index .Values.services "favourite-service" "service" "port" }}
+            - containerPort: {{ index .Values.services "favourite-service" "service" "port" }} 
+          resources: {{- toYaml (index .Values.services "favourite-service" "resources") | nindent 12 }}
           securityContext:
             allowPrivilegeEscalation: false
             runAsNonRoot: true

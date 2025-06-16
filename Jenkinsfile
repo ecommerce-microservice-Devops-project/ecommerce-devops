@@ -24,37 +24,39 @@ pipeline {
         }
         stage('Actualizar tags') {
             steps {
-                sh '''
-                SERVICES=(
-                "api-gateway"
-                "cloud-config"
-                "favourite-service"
-                "order-service"
-                "payment-service"
-                "product-service"
-                "proxy-client"
-                "service-discovery"
-                "shipping-service"
-                "user-service"
-                )
+                dir('helm') {
+                    sh '''#!/bin/bash
+                    SERVICES=(
+                    "api-gateway"
+                    "cloud-config"
+                    "favourite-service"
+                    "order-service"
+                    "payment-service"
+                    "product-service"
+                    "proxy-client"
+                    "service-discovery"
+                    "shipping-service"
+                    "user-service"
+                    )
 
-                FILE="helm/ecommerce/values-${BRANCH_NAME}.yaml"
+                    FILE="ecommerce/values-${BRANCH_NAME}.yaml"
 
-                for SERVICE in "${SERVICES[@]}"; do
-                IMAGE_REPO="sebas3004tian/${SERVICE}-ecommerce-boot"
+                    for SERVICE in "${SERVICES[@]}"; do
+                    IMAGE_REPO="sebas3004tian/${SERVICE}-ecommerce-boot"
 
-                TAG=$(curl -s "https://hub.docker.com/v2/repositories/${IMAGE_REPO}/tags?page_size=100" |
-                    grep -o '"name":"[^"]*"' |
-                    sed 's/"name":"//;s/"//' |
-                    grep "^${BRANCH_NAME}-" |
-                    sort -V |
-                    tail -n 1)
+                    TAG=$(curl -s "https://hub.docker.com/v2/repositories/${IMAGE_REPO}/tags?page_size=100" |
+                        grep -o '"name":"[^"]*"' |
+                        sed 's/"name":"//;s/"//' |
+                        grep "^${BRANCH_NAME}-" |
+                        sort -V |
+                        tail -n 1)
 
-                echo "Último tag para $SERVICE: $TAG"
+                    echo "Último tag para $SERVICE: $TAG"
 
-                sed -i "/${SERVICE}:$/,/tag:/s/tag: .*/tag: ${TAG}/" "$FILE"
-                done
-                '''
+                    sed -i "/${SERVICE}:$/,/tag:/s/tag: .*/tag: ${TAG}/" "$FILE"
+                    done
+                    '''
+                }
             }
         }
 
@@ -65,6 +67,12 @@ pipeline {
 
                     sh "helm upgrade --install ecommerce ./ecommerce -n ${K8S_NAMESPACE} -f ./ecommerce/values-${BRANCH_NAME}.yaml"
                 }
+            }
+        }
+
+        stage('Quite Network Policies') {
+            steps {
+                sh "kubectl delete networkpolicy -n ecommerce-develop --all"
             }
         }
 
@@ -119,28 +127,71 @@ pipeline {
                             kubectl apply -f filebeat/filebeat-rbac.yaml -n logging-stack
                             kubectl apply -f filebeat/filebeat-daemonset.yaml -n logging-stack
                         '''
+                        echo 'Añadiendo purpose para monitoreo...'
+                        sh ''' 
+                            kubectl label namespace monitoring purpose=observability
+                            kubectl label namespace logging-stack purpose=observability
+                        '''
                     }
                 }
             }
         }
 
-        stage('Wait for Deployment') {
+        stage('Añadir purpose para monitoreo') {
             steps {
                 script {
-                    echo "Esperando a que el despliegue se complete para la rama: ${BRANCH_NAME}"
-                    def deployments = sh(script: "kubectl get deploy -n ${K8S_NAMESPACE} -o jsonpath='{.items[*].metadata.name}'", returnStdout: true).trim().split(" ")
-                    for (d in deployments) {
-                        sh "kubectl rollout status deployment/${d} -n ${K8S_NAMESPACE} --timeout=300s"
+                    echo 'Añadiendo purpose para monitoreo...'
+                    sh ''' 
+                        kubectl label namespace monitoring purpose=observability
+                        kubectl label namespace logging-stack purpose=observability
+                    '''
+                }
+            }
+        }
+
+        stage('Wait for Core Deployments') {
+            steps {
+                script {
+                    echo "Esperando despliegue de servicios CORE"
+                    def coreDeployments = ['cloud-config', 'zipkin', 'service-discovery']
+                    for (d in coreDeployments) {
+                        echo "Esperando despliegue de ${d}"
+                        sh "kubectl rollout status deployment/${d} -n ${K8S_NAMESPACE} --timeout=900s"
                     }
                 }
             }
         }
+
+        stage('Wait for Other Deployments') {
+            steps {
+                script {
+                    echo "Esperando despliegue del resto de microservicios"
+                    // Obtener todos los deployments excepto los CORE
+                    def allDeployments = sh(script: "kubectl get deploy -n ${K8S_NAMESPACE} -o jsonpath='{.items[*].metadata.name}'", returnStdout: true).trim().split(" ")
+                    def coreDeployments = ['cloud-config', 'zipkin', 'service-discovery']
+                    def otherDeployments = allDeployments.findAll { !coreDeployments.contains(it) }
+                    
+                    for (d in otherDeployments) {
+                        echo "Esperando despliegue de ${d}"
+                        sh "kubectl rollout status deployment/${d} -n ${K8S_NAMESPACE} --timeout=600s"
+                    }
+                }
+            }
+        }
+
         stage('Post-Deployment Verification') {
             steps {
                 script {
                     echo "Verificando el despliegue para la rama: ${BRANCH_NAME}"
                     sh "kubectl get pods -n ${K8S_NAMESPACE}"
                     sh "kubectl get svc -n ${K8S_NAMESPACE}"
+                }
+            }
+        }
+        stage('Enable Network Policies') {
+            steps {
+                dir('helm') {
+                    sh "helm upgrade ecommerce ./ecommerce -n ${K8S_NAMESPACE} -f ./ecommerce/values-${BRANCH_NAME}.yaml"
                 }
             }
         }

@@ -24,6 +24,33 @@ resource "kubernetes_namespace" "prod" {
   }
 }
 
+resource "kubernetes_namespace" "monitoring" {
+  metadata {
+    name = "monitoring"
+  }
+}
+
+resource "null_resource" "monitoring_stack" {
+  depends_on = [kubernetes_namespace.monitoring]
+
+  provisioner "local-exec" {
+    command = "helm upgrade --install monitoring-stack ${path.module}/../helm/monitoring/kube-prometheus-stack -n monitoring"
+  }
+
+  provisioner "local-exec" {
+    when    = destroy
+    command = <<-EOT
+      helm uninstall monitoring-stack -n monitoring || true
+    EOT
+  }
+
+  triggers = {
+    chart_hash = filemd5("${path.module}/../helm/monitoring/kube-prometheus-stack/Chart.yaml")
+  }
+}
+
+
+
 
 # Aplicar los archivos YAML de Jenkins usando kubectl
 resource "null_resource" "jenkins_deployment" {
