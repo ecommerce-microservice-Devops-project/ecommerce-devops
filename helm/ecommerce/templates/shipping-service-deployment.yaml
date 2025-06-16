@@ -4,6 +4,7 @@ metadata:
   name: shipping-service
   labels:
     app: shipping-service
+    tier: business
 spec:
   replicas: {{ .Values.defaults.replicas }}
   selector:
@@ -13,6 +14,7 @@ spec:
     metadata:
       labels:
         app: shipping-service
+        tier: business
     spec:
       initContainers:
       - name: wait-for-cloud-config
@@ -27,7 +29,8 @@ spec:
         - name: shipping-service
           image: {{ index .Values.services "shipping-service" "image" "repository" }}:{{ index .Values.services "shipping-service" "image" "tag" }}
           ports:
-            - containerPort: {{ index .Values.services "shipping-service" "service" "port" }}
+            - containerPort: {{ index .Values.services "shipping-service" "service" "port" }} 
+          resources: {{- toYaml (index .Values.services "shipping-service" "resources") | nindent 12 }}
           securityContext:
             allowPrivilegeEscalation: false
             runAsNonRoot: true

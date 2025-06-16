@@ -8,6 +8,12 @@ defaults:
   service:
     type: ClusterIP
     port: 80
+  hpa:
+    enabled: false
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi    
 
 securityContext:
   runAsNonRoot: true
@@ -37,7 +43,14 @@ services:
     service:
       port: 8761
     hpa:
-      enabled: false
+      enabled: true
+      minReplicas: 1
+      maxReplicas: 1
+      targetCPUUtilizationPercentage: 70
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "128Mi"
 
   cloud-config:
     enabled: true
@@ -48,7 +61,14 @@ services:
     service:
       port: 9296
     hpa:
-      enabled: false
+      enabled: true
+      minReplicas: 1
+      maxReplicas: 1
+      targetCPUUtilizationPercentage: 70
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "128Mi"
 
   api-gateway:
     enabled: true
@@ -61,8 +81,12 @@ services:
     hpa:
       enabled: true
       minReplicas: 1
-      maxReplicas: 6
+      maxReplicas: 1
       targetCPUUtilizationPercentage: 70
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "128Mi"
 
   proxy-client:
     enabled: true
@@ -75,8 +99,12 @@ services:
     hpa:
       enabled: true
       minReplicas: 1
-      maxReplicas: 6
+      maxReplicas: 1
       targetCPUUtilizationPercentage: 70
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "128Mi"
 
   user-service:
     enabled: true
@@ -88,9 +116,13 @@ services:
       port: 8700
     hpa:
       enabled: true
-      minReplicas: 2
-      maxReplicas: 6
+      minReplicas: 1
+      maxReplicas: 1
       targetCPUUtilizationPercentage: 70
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "128Mi"
 
   product-service:
     enabled: true
@@ -102,9 +134,13 @@ services:
       port: 8500
     hpa:
       enabled: true
-      minReplicas: 2
-      maxReplicas: 6
+      minReplicas: 1
+      maxReplicas: 1
       targetCPUUtilizationPercentage: 70
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "128Mi"
 
   favourite-service:
     enabled: true
@@ -116,9 +152,13 @@ services:
       port: 8800
     hpa:
       enabled: true
-      minReplicas: 2
-      maxReplicas: 4
+      minReplicas: 1
+      maxReplicas: 1
       targetCPUUtilizationPercentage: 70
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "128Mi"
 
   order-service:
     enabled: true
@@ -130,9 +170,13 @@ services:
       port: 8300
     hpa:
       enabled: true
-      minReplicas: 2
-      maxReplicas: 5
+      minReplicas: 1
+      maxReplicas: 1
       targetCPUUtilizationPercentage: 70
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "128Mi"
 
   shipping-service:
     enabled: true
@@ -144,9 +188,13 @@ services:
       port: 8600
     hpa:
       enabled: true
-      minReplicas: 2
-      maxReplicas: 4
+      minReplicas: 1
+      maxReplicas: 1
       targetCPUUtilizationPercentage: 70
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "128Mi"
 
   payment-service:
     enabled: true
@@ -158,9 +206,13 @@ services:
       port: 8400
     hpa:
       enabled: true
-      minReplicas: 2
-      maxReplicas: 5
+      minReplicas: 1
+      maxReplicas: 1
       targetCPUUtilizationPercentage: 70
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "128Mi"
 
   zipkin:
     enabled: true
@@ -170,4 +222,8 @@ services:
     service:
       port: 9411
     hpa:
-      enabled: false  # Zipkin normalmente no necesita escalarse
+      enabled: false
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "128Mi"

@@ -4,6 +4,7 @@ metadata:
   name: product-service
   labels:
     app: product-service
+    tier: business
 spec:
   replicas: {{ .Values.defaults.replicas }}
   selector:
@@ -14,6 +15,7 @@ spec:
       labels:
         app: product-service
         io.kompose.network/microservices_network: "true"
+        tier: business
     spec:
       initContainers:
       - name: wait-for-cloud-config
@@ -28,7 +30,8 @@ spec:
         - name: product-service
           image: {{ index .Values.services "product-service" "image" "repository" }}:{{ index .Values.services "product-service" "image" "tag" }}
           ports:
-            - containerPort: {{ index .Values.services "product-service" "service" "port" }}
+            - containerPort: {{ index .Values.services "product-service" "service" "port" }} 
+          resources: {{- toYaml (index .Values.services "product-service" "resources") | nindent 12 }}
           securityContext:
             allowPrivilegeEscalation: false
             runAsNonRoot: true

@@ -4,6 +4,7 @@ metadata:
   name: zipkin
   labels:
     app: zipkin
+    role: core
 spec:
   replicas: {{ .Values.defaults.replicas }}
   selector:
@@ -13,11 +14,12 @@ spec:
     metadata:
       labels:
         app: zipkin
+        role: core
     spec:
       containers:
         - name: zipkin
           image: {{ index .Values.services "zipkin" "image" "repository" }}:{{ index .Values.services "zipkin" "image" "tag" }}
           ports:
-            - containerPort: {{ index .Values.services "zipkin" "service" "port" }}
-          resources: {}
+            - containerPort: {{ index .Values.services "zipkin" "service" "port" }} 
+          resources: {{- toYaml (index .Values.services "zipkin" "resources") | nindent 12 }}
       restartPolicy: Always
