@@ -245,7 +245,6 @@ pipeline {
                         kubectl delete pod zap-scan --namespace=${K8S_NAMESPACE} --ignore-not-found || true
                     """
 
-                    archiveArtifacts artifacts: 'zap-report.json', fingerprint: true
                 }
             }
         }
