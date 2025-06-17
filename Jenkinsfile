@@ -198,11 +198,25 @@ pipeline {
         
         stage('ZAP Security Scan') {
             steps {
-                sh '''
-                    docker run --rm -v $WORKSPACE:/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable \
-                    zap-full-scan.py -t http://api-gateway.${K8S_NAMESPACE}.svc.cluster.local:8080 \
-                    -r zap-report.html || true
-                '''
+                script {
+                    sh """
+                        echo "Iniciando escaneo de seguridad ZAP..."
+
+                        docker run --rm \
+                            -v \$WORKSPACE:/zap/wrk/:rw \
+                            -t ghcr.io/zaproxy/zap-full-scan \
+                            zap-full-scan.py \
+                            -t http://api-gateway.${K8S_NAMESPACE}.svc.cluster.local:8080 \
+                            -r zap-report.html || true
+
+                        echo "Escaneo ZAP finalizado. Revisa zap-report.html en los artefactos."
+                    """
+                }
+            }
+            post {
+                always {
+                    archiveArtifacts artifacts: 'zap-report.html', allowEmptyArchive: true
+                }
             }
         }
 
