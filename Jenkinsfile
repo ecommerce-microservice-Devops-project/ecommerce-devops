@@ -193,35 +193,34 @@ pipeline {
             steps {
                 script {
                     echo "Iniciando escaneo ZAP desde Kubernetes..."
-
-                    def zapOverrides = """{
-                        "apiVersion": "v1",
-                        "spec": {
-                            "volumes": [
-                                {
-                                    "name": "zap-work",
-                                    "emptyDir": {}
-                                }
-                            ],
-                            "containers": [
-                                {
-                                    "name": "zap",
-                                    "image": "ghcr.io/zaproxy/zaproxy:stable",
-                                    "command": ["/bin/sh", "-c"],
-                                    "args": [
-                                        "zap-baseline.py -t http://api-gateway.${K8S_NAMESPACE}.svc.cluster.local:8080 -r zap-report.html -I; EXIT_CODE=\\\$?; echo ZAP terminó con código: \\\$EXIT_CODE; if [ -f /zap/wrk/zap-report.html ]; then cat /zap/wrk/zap-report.html; else echo Reporte no generado; fi; exit \\\$EXIT_CODE"
-                                    ],
-                                    "volumeMounts": [
-                                        {
-                                            "mountPath": "/zap/wrk",
-                                            "name": "zap-work"
-                                        }
-                                    ]
-                                }
-                            ],
-                            "restartPolicy": "Never"
+                    def zapOverrides = '''{
+                    "apiVersion": "v1",
+                    "spec": {
+                        "volumes": [
+                        {
+                            "name": "zap-work",
+                            "emptyDir": {}
                         }
-                    }""".replaceAll('"', '\\"').replaceAll('\n', '')
+                        ],
+                        "containers": [
+                        {
+                            "name": "zap",
+                            "image": "ghcr.io/zaproxy/zaproxy:stable",
+                            "command": ["/bin/sh", "-c"],
+                            "args": [
+                            "zap-baseline.py -t http://api-gateway.${K8S_NAMESPACE}.svc.cluster.local:8080 -r zap-report.html -I; EXIT_CODE=$?; echo ZAP terminó con código: $EXIT_CODE; if [ -f /zap/wrk/zap-report.html ]; then cat /zap/wrk/zap-report.html; else echo Reporte no generado; fi; exit $EXIT_CODE"
+                            ],
+                            "volumeMounts": [
+                            {
+                                "mountPath": "/zap/wrk",
+                                "name": "zap-work"
+                            }
+                            ]
+                        }
+                        ],
+                        "restartPolicy": "Never"
+                    }
+                    }'''.replaceAll('"', '\\"').replaceAll('\n', '')
 
 
                     sh """
