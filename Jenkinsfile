@@ -216,7 +216,15 @@ pipeline {
                                 "image": "ghcr.io/zaproxy/zaproxy:stable",
                                 "command": ["/bin/sh", "-c"],
                                 "args": [
-                                    "zap-baseline.py -t http://api-gateway.${K8S_NAMESPACE}.svc.cluster.local:8080 -I -J /zap/wrk/zap-report.json || true; [ -f /zap/wrk/zap-report.json ] && cat /zap/wrk/zap-report.json || echo Reporte no generado"
+                                    "zap-baseline.py -t http://api-gateway.${K8S_NAMESPACE}.svc.cluster.local:8080 -I -r zap-report.html; \
+                                    EXIT_CODE=\\$?; \
+                                    echo 'ZAP terminó con código:' \\$EXIT_CODE; \
+                                    if [ -f /zap/wrk/zap-report.html ]; then \
+                                    cat /zap/wrk/zap-report.html; \
+                                    else \
+                                    echo 'Reporte no generado'; \
+                                    fi; \
+                                    exit \\$EXIT_CODE"
                                 ],
                                 "volumeMounts": [
                                     {
@@ -235,20 +243,27 @@ pipeline {
                         STATUS=\$(kubectl get pod zap-scan -n ${K8S_NAMESPACE} -o jsonpath='{.status.phase}')
                         echo "Estado actual: \$STATUS"
                         if [ "\$STATUS" = "Succeeded" ] || [ "\$STATUS" = "Failed" ]; then
+                            sleep 5
                             break
                         fi
                         sleep 5
                         done
 
                         echo "Logs del pod zap-scan:"
-                        kubectl logs zap-scan -n ${K8S_NAMESPACE}
+                        kubectl logs zap-scan -n ${K8S_NAMESPACE} -c zap || echo "No se pudieron obtener logs"
+
+                        echo "Copiando reporte ZAP..."
+                        kubectl cp ${K8S_NAMESPACE}/zap-scan:/zap/wrk/zap-report.html zap-report.html || echo "No se pudo copiar zap-report.html"
 
                         echo "Eliminando pod zap-scan..."
                         kubectl delete pod zap-scan --namespace=${K8S_NAMESPACE} --ignore-not-found
                     """
+
+                    archiveArtifacts artifacts: 'zap-report.html', fingerprint: true
                 }
             }
         }
+
 
 
         stage('Enable Network Policies') {
