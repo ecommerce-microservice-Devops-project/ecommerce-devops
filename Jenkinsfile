@@ -217,9 +217,10 @@ pipeline {
                                 "name": "zap",
                                 "image": "ghcr.io/zaproxy/zaproxy:stable",
                                 "command": ["/bin/sh", "-c"],
-                                "args": [
-                                    "zap-baseline.py -t http://api-gateway.${K8S_NAMESPACE}.svc.cluster.local:8080 -I -J /zap/wrk/zap-report.json"
+                                args: [
+                                "zap-baseline.py -t http://api-gateway.\${K8S_NAMESPACE}.svc.cluster.local:8080 -I -J /zap/wrk/zap-report.json"
                                 ],
+
                                 "volumeMounts": [
                                     {
                                     "mountPath": "/zap/wrk",
