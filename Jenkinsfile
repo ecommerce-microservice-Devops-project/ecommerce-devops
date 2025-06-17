@@ -195,8 +195,25 @@ pipeline {
                 }
             }
         }
+        
+        stage('Security Scan with OWASP ZAP') {
+            steps {
+                script {
+                    def ingressUrl = "http://api-gateway.${K8S_NAMESPACE}.svc.cluster.local:8080"
+
+                    echo "Ejecutando análisis de seguridad con OWASP ZAP contra ${ingressUrl}"
+
+                    sh """
+                        docker run --rm -v \$WORKSPACE:/zap/wrk/:rw -t owasp/zap2docker-stable zap-full-scan.py \
+                          -t ${ingressUrl} \
+                          -r zap-report.html || true
+                    """
+                }
+            }
+        }
 
     }
+    
 
     post {
         failure {
@@ -204,6 +221,7 @@ pipeline {
         }
         always {
             echo "Pipeline ejecutado en el namespace: ${K8S_NAMESPACE}"
+            archiveArtifacts artifacts: 'zap-report.html', allowEmptyArchive: true
         }
     }
 }
