@@ -188,6 +188,70 @@ pipeline {
                 }
             }
         }
+
+        stage('ZAP Security Scan') {
+            steps {
+                script {
+                    echo "Iniciando escaneo ZAP desde Kubernetes..."
+
+                    sh """
+                        echo "Eliminando pod anterior..."
+                        kubectl delete pod zap-scan --namespace=${K8S_NAMESPACE} --ignore-not-found || true
+
+                        echo "Lanzando escaneo ZAP..."
+                        kubectl run zap-scan \
+                        --namespace=${K8S_NAMESPACE} \
+                        --image=ghcr.io/zaproxy/zaproxy:stable \
+                        --restart=Never \
+                        --overrides='{
+                            "apiVersion": "v1",
+                            "spec": {
+                            "volumes": [
+                                {
+                                "name": "zap-work",
+                                "emptyDir": {}
+                                }
+                            ],
+                            "containers": [
+                                {
+                                "name": "zap",
+                                "image": "ghcr.io/zaproxy/zaproxy:stable",
+                                "command": ["/bin/sh", "-c"],
+                                "args": [
+                                    "zap-baseline.py -t http://api-gateway.${K8S_NAMESPACE}.svc.cluster.local:8080 -I -J /zap/wrk/zap-report.json"
+                                ],
+                                "volumeMounts": [
+                                    {
+                                    "mountPath": "/zap/wrk",
+                                    "name": "zap-work"
+                                    }
+                                ]
+                                }
+                            ],
+                            "restartPolicy": "Never"
+                            }
+                        }' --command
+
+                        echo "Esperando unos segundos para que inicie el pod..."
+                        sleep 100
+
+                        echo "Logs del pod zap-scan:"
+                        kubectl logs zap-scan --namespace=${K8S_NAMESPACE} || echo "No se pudieron obtener los logs"
+
+                        echo "Copiando reporte JSON si existe:"
+                        kubectl cp ${K8S_NAMESPACE}/zap-scan:/zap/wrk/zap-report.json zap-report.json || echo "No se pudo copiar el reporte"
+
+                        echo "Eliminando pod zap-scan..."
+                        kubectl delete pod zap-scan --namespace=${K8S_NAMESPACE} --ignore-not-found || true
+                    """
+
+                }
+            }
+        }
+
+
+
+
         stage('Enable Network Policies') {
             steps {
                 dir('helm') {
@@ -195,8 +259,8 @@ pipeline {
                 }
             }
         }
-
     }
+    
 
     post {
         failure {
@@ -204,6 +268,7 @@ pipeline {
         }
         always {
             echo "Pipeline ejecutado en el namespace: ${K8S_NAMESPACE}"
+            archiveArtifacts artifacts: 'zap-report.html', allowEmptyArchive: true
         }
     }
 }
