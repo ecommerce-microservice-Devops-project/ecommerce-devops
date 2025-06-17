@@ -194,7 +194,7 @@ pipeline {
                 script {
                     echo "Iniciando escaneo ZAP desde Kubernetes..."
 
-                    def zapOverrides = '''{
+                    def zapOverrides = """{
                         "apiVersion": "v1",
                         "spec": {
                             "volumes": [
@@ -209,7 +209,7 @@ pipeline {
                                     "image": "ghcr.io/zaproxy/zaproxy:stable",
                                     "command": ["/bin/sh", "-c"],
                                     "args": [
-                                        "zap-baseline.py -t http://api-gateway.${K8S_NAMESPACE}.svc.cluster.local:8080 -I -r zap-report.html; EXIT_CODE=\\$?; echo ZAP terminó con código: \\$EXIT_CODE; if [ -f /zap/wrk/zap-report.html ]; then cat /zap/wrk/zap-report.html; else echo Reporte no generado; fi; exit \\$EXIT_CODE"
+                                        "zap-baseline.py -t http://api-gateway.${K8S_NAMESPACE}.svc.cluster.local:8080 -r zap-report.html -I; EXIT_CODE=\\\$?; echo ZAP terminó con código: \\\$EXIT_CODE; if [ -f /zap/wrk/zap-report.html ]; then cat /zap/wrk/zap-report.html; else echo Reporte no generado; fi; exit \\\$EXIT_CODE"
                                     ],
                                     "volumeMounts": [
                                         {
@@ -221,7 +221,8 @@ pipeline {
                             ],
                             "restartPolicy": "Never"
                         }
-                    }'''.replaceAll('"', '\\"').replaceAll('\n', '')
+                    }""".replaceAll('"', '\\"').replaceAll('\n', '')
+
 
                     sh """
                         echo "Eliminando pod anterior..."
