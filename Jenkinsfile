@@ -196,18 +196,13 @@ pipeline {
             }
         }
         
-        stage('Security Scan with OWASP ZAP') {
+        stage('ZAP Security Scan') {
             steps {
-                script {
-                    def ingressUrl = "http://api-gateway.${K8S_NAMESPACE}.svc.cluster.local:8080"
-                    echo "Ejecutando análisis de seguridad con OWASP ZAP contra ${ingressUrl}"
-
-                    sh """
-                        docker run --rm -v \$WORKSPACE:/zap/wrk/:rw -t ghcr.io/zaproxy/zap-full-scan \
-                          -t ${ingressUrl} \
-                          -r zap-report.html || true
-                    """
-                }
+                sh '''
+                    docker run --rm -v $WORKSPACE:/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable \
+                    zap-full-scan.py -t http://api-gateway.${K8S_NAMESPACE}.svc.cluster.local:8080 \
+                    -r zap-report.html || true
+                '''
             }
         }
 
