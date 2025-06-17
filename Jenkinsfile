@@ -195,21 +195,35 @@ pipeline {
                 }
             }
         }
-        
+                
         stage('ZAP Security Scan') {
             steps {
                 script {
                     sh """
-                        echo "Iniciando escaneo de seguridad ZAP..."
+                        echo "Iniciando escaneo ZAP desde Kubernetes..."
 
-                        docker run --rm \
-                            -v \$WORKSPACE:/zap/wrk/:rw \
-                            -t ghcr.io/zaproxy/zap-full-scan \
-                            zap-full-scan.py \
-                            -t http://api-gateway.${K8S_NAMESPACE}.svc.cluster.local:8080 \
-                            -r zap-report.html || true
+                        # Elimina cualquier pod previo
+                        kubectl delete pod zap-scan --namespace=${K8S_NAMESPACE} --ignore-not-found
 
-                        echo "Escaneo ZAP finalizado. Revisa zap-report.html en los artefactos."
+                        # Ejecuta el escaneo como un Pod temporal
+                        kubectl run zap-scan \
+                            --namespace=${K8S_NAMESPACE} \
+                            --image=ghcr.io/zaproxy/zaproxy:stable \
+                            --restart=Never \
+                            --command -- /bin/sh -c \"
+                                zap-full-scan.py \
+                                -t http://api-gateway.${K8S_NAMESPACE}.svc.cluster.local:8080 \
+                                -r /zap/wrk/zap-report.html || true
+                            \"
+
+                        echo "Esperando a que el pod zap-scan termine..."
+                        kubectl wait --for=condition=complete --timeout=300s pod/zap-scan --namespace=${K8S_NAMESPACE}
+
+                        echo "Obteniendo reporte ZAP..."
+                        kubectl cp ${K8S_NAMESPACE}/zap-scan:/zap/wrk/zap-report.html zap-report.html
+
+                        echo "Eliminando pod zap-scan..."
+                        kubectl delete pod zap-scan --namespace=${K8S_NAMESPACE}
                     """
                 }
             }
