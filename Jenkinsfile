@@ -232,24 +232,30 @@ pipeline {
                             }
                         }' --command
 
-                        echo "Esperando que el escaneo termine..."
-                        kubectl wait --for=condition=Completed pod/zap-scan --namespace=${K8S_NAMESPACE} --timeout=300s
+                        echo "Esperando a que el pod termine (Succeeded o Failed)..."
+                        for i in {1..60}; do
+                            STATUS=$(kubectl get pod zap-scan -n ${K8S_NAMESPACE} -o jsonpath='{.status.phase}')
+                            echo "Estado actual del pod: \$STATUS"
+                            if [ "\$STATUS" = "Succeeded" ] || [ "\$STATUS" = "Failed" ]; then
+                                break
+                            fi
+                            sleep 5
+                        done
 
-                        echo "Logs del pod zap-scan:"
-                        kubectl logs zap-scan --namespace=${K8S_NAMESPACE}
+                        echo "Logs del escaneo ZAP:"
+                        kubectl logs zap-scan -n ${K8S_NAMESPACE} || echo "No se pudieron obtener logs"
 
-                        echo "Copiando reporte JSON si existe:"
+                        echo "Copiando reporte JSON si existe..."
                         kubectl cp ${K8S_NAMESPACE}/zap-scan:/zap/wrk/zap-report.json zap-report.json || echo "No se pudo copiar el reporte"
 
                         echo "Eliminando pod zap-scan..."
                         kubectl delete pod zap-scan --namespace=${K8S_NAMESPACE} --ignore-not-found || true
                     """
 
-                    archiveArtifacts artifacts: 'zap-report.json', fingerprint: true
+                    archiveArtifacts artifacts: 'zap-report.json', fingerprint: true, onlyIfSuccessful: false
                 }
             }
         }
-
 
 
         stage('Enable Network Policies') {
