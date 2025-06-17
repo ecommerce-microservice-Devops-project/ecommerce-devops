@@ -188,14 +188,7 @@ pipeline {
                 }
             }
         }
-        stage('Enable Network Policies') {
-            steps {
-                dir('helm') {
-                    sh "helm upgrade ecommerce ./ecommerce -n ${K8S_NAMESPACE} -f ./ecommerce/values-${BRANCH_NAME}.yaml"
-                }
-            }
-        }
-                
+
         stage('ZAP Security Scan') {
             steps {
                 sh '''
@@ -221,6 +214,13 @@ pipeline {
             }
         }
 
+        stage('Enable Network Policies') {
+            steps {
+                dir('helm') {
+                    sh "helm upgrade ecommerce ./ecommerce -n ${K8S_NAMESPACE} -f ./ecommerce/values-${BRANCH_NAME}.yaml"
+                }
+            }
+        }
     }
     
 
