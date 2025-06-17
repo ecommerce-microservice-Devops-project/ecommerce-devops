@@ -232,15 +232,8 @@ pipeline {
                             }
                         }' --command
 
-                        echo "Esperando que el pod zap-scan finalice (hasta 5 min)..."
-                        for i in {1..60}; do
-                            STATUS=\$(kubectl get pod zap-scan -n ${K8S_NAMESPACE} -o jsonpath='{.status.phase}')
-                            echo "Estado actual: \$STATUS"
-                            if [ "\$STATUS" = "Succeeded" ] || [ "\$STATUS" = "Failed" ]; then
-                                break
-                            fi
-                            sleep 5
-                        done
+                        echo "Esperando unos segundos para que inicie el pod..."
+                        sleep 100
 
                         echo "Logs del pod zap-scan:"
                         kubectl logs zap-scan --namespace=${K8S_NAMESPACE} || echo "No se pudieron obtener los logs"
@@ -256,6 +249,7 @@ pipeline {
                 }
             }
         }
+
 
 
 
