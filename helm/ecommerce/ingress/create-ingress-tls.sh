@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ⚙️ Variables
-NAMESPACE="ecommerce-develop"
+NAMESPACE="ecommerce-stage"
 SECRET_NAME="my-tls-secret"
 DOMAIN="local.test"
 INGRESS_NAME="api-gateway-ingress"
