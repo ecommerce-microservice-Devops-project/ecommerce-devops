@@ -198,39 +198,33 @@ pipeline {
                 
         stage('ZAP Security Scan') {
             steps {
-                script {
-                    sh """
-                        echo "Iniciando escaneo ZAP desde Kubernetes..."
+                sh '''
+                    echo "Iniciando escaneo ZAP desde Kubernetes..."
 
-                        # Elimina cualquier pod previo
-                        kubectl delete pod zap-scan --namespace=${K8S_NAMESPACE} --ignore-not-found
+                    # Borrar pod anterior si existe
+                    kubectl delete pod zap-scan --namespace=${K8S_NAMESPACE} --ignore-not-found
 
-                        # Ejecuta el escaneo como un Pod temporal
-                        kubectl run zap-scan \
-                            --namespace=${K8S_NAMESPACE} \
-                            --image=ghcr.io/zaproxy/zaproxy:stable \
-                            --restart=Never \
-                            --command -- /bin/sh -c \"
-                                zap-full-scan.py \
-                                -t http://api-gateway.${K8S_NAMESPACE}.svc.cluster.local:8080 \
-                                -r /zap/wrk/zap-report.html || true
-                            \"
+                    # Ejecutar escaneo
+                    kubectl run zap-scan \
+                        --namespace=${K8S_NAMESPACE} \
+                        --image=ghcr.io/zaproxy/zaproxy:stable \
+                        --restart=Never \
+                        --command -- /bin/sh -c "zap-full-scan.py -t http://api-gateway.${K8S_NAMESPACE}.svc.cluster.local:8080 -r /zap/wrk/zap-report.html || true"
 
-                        echo "Esperando a que el pod zap-scan termine..."
-                        kubectl wait --for=condition=complete --timeout=300s pod/zap-scan --namespace=${K8S_NAMESPACE}
+                    echo "Esperando a que el pod zap-scan termine..."
+                    for i in {1..30}; do
+                        STATUS=$(kubectl get pod zap-scan -n ${K8S_NAMESPACE} -o jsonpath="{.status.phase}")
+                        echo "Estado del pod: $STATUS"
+                        if [[ "$STATUS" == "Succeeded" || "$STATUS" == "Failed" ]]; then
+                            break
+                        fi
+                        sleep 10
+                    done
 
-                        echo "Obteniendo reporte ZAP..."
-                        kubectl cp ${K8S_NAMESPACE}/zap-scan:/zap/wrk/zap-report.html zap-report.html
-
-                        echo "Eliminando pod zap-scan..."
-                        kubectl delete pod zap-scan --namespace=${K8S_NAMESPACE}
-                    """
-                }
-            }
-            post {
-                always {
-                    archiveArtifacts artifacts: 'zap-report.html', allowEmptyArchive: true
-                }
+                    echo "Extrayendo reporte ZAP..."
+                    kubectl cp ${K8S_NAMESPACE}/zap-scan:/zap/wrk/zap-report.html zap-report.html || true
+                '''
+                archiveArtifacts artifacts: 'zap-report.html', allowEmptyArchive: true
             }
         }
 
