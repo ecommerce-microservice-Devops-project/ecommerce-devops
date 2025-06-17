@@ -195,66 +195,65 @@ pipeline {
                     echo "Iniciando escaneo ZAP desde Kubernetes..."
 
                     def zapOverrides = '''{
-                    "apiVersion": "v1",
-                    "spec": {
-                        "volumes": [
-                        {
-                            "name": "zap-work",
-                            "emptyDir": {}
-                        }
-                        ],
-                        "containers": [
-                        {
-                            "name": "zap",
-                            "image": "ghcr.io/zaproxy/zaproxy:stable",
-                            "command": ["/bin/sh", "-c"],
-                            "args": [
-                            "zap-baseline.py -t http://api-gateway.${K8S_NAMESPACE}.svc.cluster.local:8080 -I -r zap-report.html; EXIT_CODE=\\$?; echo ZAP terminó con código: \\$EXIT_CODE; if [ -f /zap/wrk/zap-report.html ]; then cat /zap/wrk/zap-report.html; else echo Reporte no generado; fi; exit \\$EXIT_CODE"
+                        "apiVersion": "v1",
+                        "spec": {
+                            "volumes": [
+                                {
+                                    "name": "zap-work",
+                                    "emptyDir": {}
+                                }
                             ],
-                            "volumeMounts": [
-                            {
-                                "mountPath": "/zap/wrk",
-                                "name": "zap-work"
-                            }
-                            ]
+                            "containers": [
+                                {
+                                    "name": "zap",
+                                    "image": "ghcr.io/zaproxy/zaproxy:stable",
+                                    "command": ["/bin/sh", "-c"],
+                                    "args": [
+                                        "zap-baseline.py -t http://api-gateway.${K8S_NAMESPACE}.svc.cluster.local:8080 -I -r zap-report.html; EXIT_CODE=\\$?; echo ZAP terminó con código: \\$EXIT_CODE; if [ -f /zap/wrk/zap-report.html ]; then cat /zap/wrk/zap-report.html; else echo Reporte no generado; fi; exit \\$EXIT_CODE"
+                                    ],
+                                    "volumeMounts": [
+                                        {
+                                            "mountPath": "/zap/wrk",
+                                            "name": "zap-work"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "restartPolicy": "Never"
                         }
-                        ],
-                        "restartPolicy": "Never"
-                    }
                     }'''.replaceAll('"', '\\"').replaceAll('\n', '')
 
                     sh """
+                        echo "Eliminando pod anterior..."
                         kubectl delete pod zap-scan --namespace=${K8S_NAMESPACE} --ignore-not-found
 
+                        echo "Lanzando escaneo ZAP..."
                         kubectl run zap-scan \\
                         --namespace=${K8S_NAMESPACE} \\
                         --image=ghcr.io/zaproxy/zaproxy:stable \\
                         --restart=Never \\
                         --overrides="${zapOverrides}" \\
                         --command
-                    """
 
-                    echo "Esperando que el escaneo termine..."
-                    sh '''
+                        echo "Esperando que el pod esté listo..."
                         for i in {1..60}; do
-                            STATUS=$(kubectl get pod zap-scan -n ${K8S_NAMESPACE} -o jsonpath='{.status.phase}')
-                            echo "Estado actual: $STATUS"
-                            if [ "$STATUS" = "Succeeded" ] || [ "$STATUS" = "Failed" ]; then
-                                sleep 5
+                            STATUS=\$(kubectl get pod zap-scan -n ${K8S_NAMESPACE} -o jsonpath='{.status.phase}')
+                            echo "Estado actual: \$STATUS"
+                            if [ "\$STATUS" = "Running" ] || [ "\$STATUS" = "Succeeded" ] || [ "\$STATUS" = "Failed" ]; then
                                 break
                             fi
                             sleep 5
                         done
 
-                        echo "Logs del pod zap-scan:"
-                        kubectl logs zap-scan -n ${K8S_NAMESPACE} -c zap || echo "No se pudieron obtener logs"
+                        echo "Mostrando logs de zap-scan en tiempo real:"
+                        kubectl logs -f zap-scan -n ${K8S_NAMESPACE} -c zap || echo "⚠️ No se pudieron obtener logs"
 
                         echo "Copiando reporte ZAP..."
-                        kubectl cp ${K8S_NAMESPACE}/zap-scan:/zap/wrk/zap-report.html zap-report.html || echo "No se pudo copiar zap-report.html"
+                        kubectl cp ${K8S_NAMESPACE}/zap-scan:/zap/wrk/zap-report.html zap-report.html || echo "⚠️ No se pudo copiar zap-report.html"
 
                         echo "Eliminando pod zap-scan..."
                         kubectl delete pod zap-scan --namespace=${K8S_NAMESPACE} --ignore-not-found
-                    '''
+                    """
 
                     archiveArtifacts artifacts: 'zap-report.html', fingerprint: true
                 }
