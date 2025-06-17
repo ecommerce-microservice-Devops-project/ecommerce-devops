@@ -201,7 +201,7 @@ pipeline {
                         --namespace=${K8S_NAMESPACE} \
                         --image=ghcr.io/zaproxy/zaproxy:stable \
                         --restart=Never \
-                        --overrides='{
+                        --overrides="""
                             "apiVersion": "v1",
                             "spec": {
                             "volumes": [
@@ -236,7 +236,7 @@ pipeline {
                             ],
                             "restartPolicy": "Never"
                             }
-                        }' --command
+                        """ --command
 
                         echo "Esperando que el escaneo termine..."
                         for i in {1..60}; do
