@@ -204,25 +204,29 @@ pipeline {
                     # Borrar pod anterior si existe
                     kubectl delete pod zap-scan --namespace=${K8S_NAMESPACE} --ignore-not-found
 
-                    # Ejecutar escaneo
+                    # Ejecutar escaneo y mantener el pod vivo después con sleep
                     kubectl run zap-scan \
                         --namespace=${K8S_NAMESPACE} \
                         --image=ghcr.io/zaproxy/zaproxy:stable \
                         --restart=Never \
-                        --command -- /bin/sh -c "zap-full-scan.py -t http://api-gateway.${K8S_NAMESPACE}.svc.cluster.local:8080 -r /zap/wrk/zap-report.html || true"
+                        --command -- /bin/sh -c "zap-full-scan.py -t http://api-gateway.${K8S_NAMESPACE}.svc.cluster.local:8080 -r /zap/wrk/zap-report.html || true; sleep 300"
 
-                    echo "Esperando a que el pod zap-scan termine..."
+                    echo "Esperando a que el pod zap-scan esté listo..."
+                    kubectl wait --for=condition=Ready pod/zap-scan --namespace=${K8S_NAMESPACE} --timeout=300s
+
+                    echo "Esperando a que el escaneo termine dentro del pod..."
+                    # Esperamos activamente a que el archivo exista
                     for i in {1..30}; do
-                        STATUS=$(kubectl get pod zap-scan -n ${K8S_NAMESPACE} -o jsonpath="{.status.phase}")
-                        echo "Estado del pod: $STATUS"
-                        if [[ "$STATUS" == "Succeeded" || "$STATUS" == "Failed" ]]; then
-                            break
-                        fi
+                        kubectl exec -n ${K8S_NAMESPACE} zap-scan -- test -f /zap/wrk/zap-report.html && break
+                        echo "Esperando que se genere el reporte ZAP..."
                         sleep 10
                     done
 
                     echo "Extrayendo reporte ZAP..."
                     kubectl cp ${K8S_NAMESPACE}/zap-scan:/zap/wrk/zap-report.html zap-report.html || true
+
+                    echo "Eliminando pod zap-scan..."
+                    kubectl delete pod zap-scan --namespace=${K8S_NAMESPACE} --ignore-not-found
                 '''
                 archiveArtifacts artifacts: 'zap-report.html', allowEmptyArchive: true
             }
