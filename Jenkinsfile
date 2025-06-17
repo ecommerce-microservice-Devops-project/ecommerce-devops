@@ -204,7 +204,7 @@ pipeline {
                     # Borrar pod anterior si existe
                     kubectl delete pod zap-scan --namespace=${K8S_NAMESPACE} --ignore-not-found
 
-                    # Crear pod con zap scan
+                    # Ejecutar escaneo con ZAP, asegurando que el sleep ocurra dentro del pod
                     kubectl run zap-scan \
                         --namespace=${K8S_NAMESPACE} \
                         --image=ghcr.io/zaproxy/zaproxy:stable \
@@ -215,7 +215,7 @@ pipeline {
                     kubectl wait --for=condition=Ready pod/zap-scan --namespace=${K8S_NAMESPACE} --timeout=300s
 
                     echo "Esperando a que el escaneo termine dentro del pod..."
-                    for i in {1..30}; do
+                    for i in $(seq 1 30); do
                         if kubectl exec -n ${K8S_NAMESPACE} zap-scan -- test -f /zap/wrk/zap-report.html; then
                             echo "Archivo zap-report.html generado."
                             break
