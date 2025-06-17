@@ -191,52 +191,55 @@ pipeline {
 
         stage('ZAP Security Scan') {
             steps {
-                sh '''
+                script {
                     echo "Iniciando escaneo ZAP desde Kubernetes..."
 
-                    kubectl delete pod zap-scan --namespace=${K8S_NAMESPACE} --ignore-not-found
+                    sh """
+                        kubectl delete pod zap-scan --namespace=${K8S_NAMESPACE} --ignore-not-found
 
-                    kubectl run zap-scan \
-                      --namespace=${K8S_NAMESPACE} \
-                      --image=ghcr.io/zaproxy/zaproxy:stable \
-                      --restart=Never \
-                      --overrides='
-                    {
-                      "apiVersion": "v1",
-                      "spec": {
-                        "volumes": [
-                          {
-                            "name": "zap-work",
-                            "emptyDir": {}
-                          }
-                        ],
-                        "containers": [
-                          {
-                            "name": "zap",
-                            "image": "ghcr.io/zaproxy/zaproxy:stable",
-                            "command": ["/bin/sh", "-c"],
-                            "args": ["zap-baseline.py -t http://api-gateway.${K8S_NAMESPACE}.svc.cluster.local:8080 -I -J /zap/wrk/zap-report.json && cat /zap/wrk/zap-report.json"],
-                            "volumeMounts": [
-                              {
-                                "mountPath": "/zap/wrk",
-                                "name": "zap-work"
-                              }
-                            ]
-                          }
-                        ],
-                        "restartPolicy": "Never"
-                      }
-                    }' --command
+                        kubectl run zap-scan \
+                          --namespace=${K8S_NAMESPACE} \
+                          --image=ghcr.io/zaproxy/zaproxy:stable \
+                          --restart=Never \
+                          --overrides='{
+                            "apiVersion": "v1",
+                            "spec": {
+                              "volumes": [
+                                {
+                                  "name": "zap-work",
+                                  "emptyDir": {}
+                                }
+                              ],
+                              "containers": [
+                                {
+                                  "name": "zap",
+                                  "image": "ghcr.io/zaproxy/zaproxy:stable",
+                                  "command": ["/bin/sh", "-c"],
+                                  "args": [
+                                    "zap-baseline.py -t http://api-gateway.${K8S_NAMESPACE}.svc.cluster.local:8080 -I -J /zap/wrk/zap-report.json && cat /zap/wrk/zap-report.json"
+                                  ],
+                                  "volumeMounts": [
+                                    {
+                                      "mountPath": "/zap/wrk",
+                                      "name": "zap-work"
+                                    }
+                                  ]
+                                }
+                              ],
+                              "restartPolicy": "Never"
+                            }
+                          }' --command
 
-                    echo "Esperando que el escaneo termine..."
-                    kubectl wait --for=condition=Completed pod/zap-scan --namespace=${K8S_NAMESPACE} --timeout=300s
+                        echo "Esperando que el escaneo termine..."
+                        kubectl wait --for=condition=Completed pod/zap-scan --namespace=${K8S_NAMESPACE} --timeout=300s
 
-                    echo "Logs del pod zap-scan:"
-                    kubectl logs zap-scan -n ${K8S_NAMESPACE}
+                        echo "Logs del pod zap-scan:"
+                        kubectl logs zap-scan -n ${K8S_NAMESPACE}
 
-                    echo "Eliminando pod zap-scan..."
-                    kubectl delete pod zap-scan --namespace=${K8S_NAMESPACE} --ignore-not-found
-                '''
+                        echo "Eliminando pod zap-scan..."
+                        kubectl delete pod zap-scan --namespace=${K8S_NAMESPACE} --ignore-not-found
+                    """
+                }
             }
         }
 
