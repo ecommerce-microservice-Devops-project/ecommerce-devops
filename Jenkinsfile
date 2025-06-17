@@ -216,7 +216,7 @@ pipeline {
                                 "image": "ghcr.io/zaproxy/zaproxy:stable",
                                 "command": ["/bin/sh", "-c"],
                                 "args": [
-                                    "zap-baseline.py -t http://api-gateway.${K8S_NAMESPACE}.svc.cluster.local:8080 -I -J /zap/wrk/zap-report.json || true; [ -f /zap/wrk/zap-report.json ] && cat /zap/wrk/zap-report.json || echo 'Reporte no generado'"
+                                    "zap-baseline.py -t http://api-gateway.${K8S_NAMESPACE}.svc.cluster.local:8080 -I -J /zap/wrk/zap-report.json || true; [ -f /zap/wrk/zap-report.json ] && cat /zap/wrk/zap-report.json || echo Reporte no generado"
                                 ],
                                 "volumeMounts": [
                                     {
